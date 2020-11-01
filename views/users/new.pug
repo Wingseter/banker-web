@@ -1,0 +1,30 @@
+extends ../layout
+
+block content
+  .container
+    h1.main-title Register
+    form(action='/users', method='POST')
+      .form-group
+        label(for='name') Name
+        input.form-control(type='text', id='name', name='name', placeholder='Your name')
+      .form-group
+        label(for='address') Address
+        input.form-control(type='text', id='address', name='address', placeholder='Address')
+      .form-group
+        label(for='Birth') Date of birth
+        input.form-control(type='text', id='birth', name='birth', placeholder='Date of birth')
+      .form-group
+        label(for='email') Email Address
+        input.form-control(type='email', id='email', name='email', placeholder='Email')
+      .form-group
+        label(for='phone') Phone Number
+        input.form-control(type='text', id='phone', name='phone', placeholder='Phone Number')      
+      .form-group
+        label(for='password') Password
+        input.form-control(type='password', id='password', name='password', placeholder='Password')
+      .form-group
+        label(for='password_confirmation') Password Confirmation
+        input.form-control(type='password', id='password_confirmation', name='password_confirmation', placeholder='Password')
+      a.btn.btn-outline-secondary(href='/users') List
+      | 
+      button.btn.btn-primary(type='submit') Register 
