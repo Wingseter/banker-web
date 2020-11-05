@@ -14,14 +14,23 @@ function needAuth(req, res, next) {
 
 
 function validateForm(form, options) {
+  var id = form.id || "";
   var name = form.name || "";
   var address = form.address || "";
   var birth = form.name || "";
   var email = form.email || "";
   var phone = form.email || "";
 
+  id = id.trim();
+  name = name.trim();
+  address = address.trim();
+  birth = birth.trim();
   name = name.trim();
   email = email.trim();
+
+  if (!id) {
+    return 'id is required.';
+  }
 
   if (!name) {
     return 'Name is required.';
@@ -79,18 +88,22 @@ router.post('/', catchErrors(async (req, res, next) => {
     req.flash('danger', err);
     return res.redirect('back');
   }
-  var user = await User.findOne({id: req.body.id});
-  console.log('USER???', user);
-  if (user) {
-    req.flash('danger', 'Email address already exists.');
+  var id = await User.findOne({id: req.body.id});
+  console.log('USER???', id);
+  if (id) {
+    req.flash('danger', 'user id already exists.');
     return res.redirect('back');
   }
-  user = new User({
+  user = {
+    id: req.body.id,
     name: req.body.name,
+    address: req.body.address,
+    birth: req.body.birth,
     email: req.body.email,
-  });
-  user.password = await user.generateHash(req.body.password);
-  await user.save();
+    phone: req.body.phone,
+    password: req.body.password,
+  };
+  await User.saveUser(user);
   req.flash('success', 'Registered successfully. Please sign in.');
   res.redirect('/');
 }));

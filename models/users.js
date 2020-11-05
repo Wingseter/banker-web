@@ -5,9 +5,8 @@ function findById(id, done){
     conn.query(sql, [id], function (err, results) {
         if (err) {
             console.log(err);
-            done('There is no user.');
         } else {
-            done(null, results[0]);
+            return results[0];
         }
     });
 }
@@ -17,12 +16,24 @@ function findOne(id, done){
     conn.query(sql, [id], function (err, results) {
         if (err) {
             console.log(err);
-            done('There is no user.');
         } else {
-            done(null, results[0]);
+            return results[0];
+        }
+    });
+}
+
+function saveUser(user){
+    console.log(user)
+    var sql = 'INSERT INTO users SET ? ';
+    conn.query(sql, user, function (err, results) {
+        if (err) {
+            console.log(err);
+        } else {
+            console.log(user);
         }
     });
 }
 
 module.exports.findById = findById;
 module.exports.findOne = findOne;
+module.exports.saveUser = saveUser;
