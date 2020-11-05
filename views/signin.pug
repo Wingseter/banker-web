@@ -6,9 +6,9 @@ block content
     .clearfix
       form.form-signin(action='/signin', method='POST')
         h3.form-signin-heading Signin
-        label.sr-only(for='username') Email address
+        label.sr-only(for='email') Email address
         input(
-          type='text', id='username', name='username', class='form-control', 
+          type='email', id='email', name='email', class='form-control', 
           placeholder='ID', required, autofocus
         )
         label.sr-only(for='password') Password
