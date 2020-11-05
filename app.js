@@ -10,16 +10,7 @@ var indexRouter = require('./routes/index');
 var passport = require('passport');
 var flash = require('connect-flash');
 var app = express();
-var mysql = require('mysql');
-var conn = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : '4321',
-  database : 'bank'
-});
-
-// MySQL DB 연결
-conn.connect();
+var conn = require('./lib/database');
 
 var passportConfig = require('./lib/passport-config');
 
@@ -53,7 +44,7 @@ app.use(session({
 // Passport 초기화
 app.use(passport.initialize());
 app.use(passport.session());
-passportConfig(passport, conn);
+passportConfig(passport);
 
 // pug의 local에 현재 사용자 정보와 flash 메시지를 전달하자.
 app.use(function(req, res, next) {
