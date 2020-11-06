@@ -1,0 +1,28 @@
+extends ../layout
+
+include ../includes/_paginate
+
+block content
+  .container
+    form.form-inline.search-input-group(action='/accounts', method='GET')
+      i.fa.fa-search
+      input.form-control.mr-sm-2(type='text', name='term', placeholder='Search', aria-label='Search', value=term)
+
+    h1.main-title 
+      | Bank Account
+      if total > 0
+        .small Total #{total} account(s)
+
+    if total <= 0 
+      .alert.alert-info No accounts available yet
+    else
+      .accounts
+        each account in accounts.docs
+          .account
+            a.title(href=`/accounts/${accounts.id}`)= accounts.title
+            include _account
+
+      +paginate(accounts, '/accounts', query)
+
+    hr
+    a.btn.btn-primary(href='/accounts/new') Make Bank Account

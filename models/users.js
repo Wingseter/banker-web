@@ -1,7 +1,7 @@
 var conn = require('../lib/database');
 
 function findById(id, done){
-    var sql = 'SELECT * FROM users WHERE id=?';
+    var sql = 'SELECT * FROM users WHERE email=?';
     conn.query(sql, [id], function (err, results) {
         if (err) {
             console.log(err);
@@ -12,7 +12,7 @@ function findById(id, done){
 }
 
 function findOne(id, done){
-    var sql = 'SELECT * FROM users WHERE id=? ORDER BY id DESC limit 1';
+    var sql = 'SELECT * FROM users WHERE email=? ORDER BY id DESC limit 1';
     conn.query(sql, [id], function (err, results) {
         if (err) {
             console.log(err);

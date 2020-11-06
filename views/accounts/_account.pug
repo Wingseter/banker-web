@@ -1,0 +1,14 @@
+.content= account.content
+
+.row
+  .col-sm
+    .numbers.
+      #[span.number.num-votes= account.numLikes] likes,
+      #[span.number.num-answers= account.numAnswers] answers,
+      #[span.number.num-views= account.numReads] reads
+  .col-sm
+    .author
+      | asked on #{moment(account.createdAt).format('YYYY-MM-DD')}
+      if account.author
+        | 
+        | by #[a(href=`/users/${account.author.id}`)= account.author.name] 

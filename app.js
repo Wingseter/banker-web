@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var usersRouter = require('./routes/users');
+var accoutRouter = require('./routes/accounts');
 var session = require('express-session');
 var methodOverride = require('method-override');
 var indexRouter = require('./routes/index');
@@ -55,6 +56,7 @@ app.use(function(req, res, next) {
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/accounts', accoutRouter);
 require('./routes/auth')(app, passport);
 
 // public 디렉토리에 있는 내용은 static하게 service하도록.
