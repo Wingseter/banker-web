@@ -1,9 +1,9 @@
 .form-group
-  label(for="title") Title
-  input.form-control(type="text", name="title", placeholder="What's your question?", value=question.title)
+  label(for="type") Account type
+  input.form-control(type="text", name="type", placeholder="account type", value=account.title)
 .form-group
-  label(for="question") Question
-  textarea.form-control(name="content", rows="5")= question.content
+  label(for="password") Account password
+  input.form-control(type="password", name="password", placeholder="password", value=account.title)
 .form-group
-  label(for="tags") Tags
-  input.form-control(type="text", name="tags", placeholder="tags separated by spaces", value=question.tags ? question.tags.join(" ") : "")
+  label(for='password_confirmation') Password Confirmation
+  input.form-control(type='password', id='password_confirmation', name='password_confirmation', placeholder='Password')

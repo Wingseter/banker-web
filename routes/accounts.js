@@ -14,6 +14,37 @@ function needAuth(req, res, next) {
 }
 
 
+
+function validateForm(form, options) {
+    var password = form.password || "";
+    var type = form.type || "";
+
+    password = password.trim();
+    type = type.trim();
+
+    if (!password) {
+        return 'password is required.';
+    }
+
+    if (!type) {
+        return 'type is required.';
+    }
+
+    if (!form.password && options.needPassword) {
+        return 'Password is required.';
+    }
+
+    if (form.password !== form.password_confirmation) {
+        return 'Passsword do not match.';
+    }
+
+    if (form.password.length < 6) {
+        return 'Password must be at least 6 characters.';
+    }
+
+    return null;
+}
+
 /* GET accounts listing. */
 router.get('/', needAuth, catchErrors(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
@@ -21,10 +52,11 @@ router.get('/', needAuth, catchErrors(async (req, res, next) => {
     const user = req.user.id;
 
     const term = req.query.term;
-    const accounts = await Account.getById(user);
-    const total = await Account.countById(user);
-    // console.log(total);
-    // console.log(accounts);
+    var accounts = await Account.getById(user);
+    var total = await Account.countById(user) || 0;
+
+    console.log(accounts);
+    console.log(total);
     res.render('accounts/index', { accounts: accounts, term: term, query: req.query, total: total });
 }));
 
@@ -70,15 +102,21 @@ router.delete('/:id', needAuth, catchErrors(async (req, res, next) => {
 }));
 
 router.post('/', needAuth, catchErrors(async (req, res, next) => {
+    var err = validateForm(req.body, {needPassword: true});
+    if (err) {
+      req.flash('danger', err);
+      return res.redirect('back');
+    }
     const user = req.user;
-    var account = new Account({
-        title: req.body.title,
-        author: user._id,
-        content: req.body.content,
-        tags: req.body.tags.split(" ").map(e => e.trim()),
-    });
-    await account.save();
-    req.flash('success', 'Successfully posted');
+    var account = {
+        type: req.body.type,
+        money: 0,
+        card: false,
+        date: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        user: user.id
+    };
+    await Account.save(account);
+    req.flash('success', 'Successfully make account');
     res.redirect('/accounts');
 }));
 

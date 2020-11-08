@@ -17,12 +17,11 @@ block content
       .alert.alert-info No accounts available yet
     else
       .accounts
-        each account in accounts.docs
+        each account in accounts
           .account
-            a.title(href=`/accounts/${accounts.id}`)= accounts.title
-            include _account
+            a.title(href=`/accounts/${account.id}`)= account.id
+            //- include _account
 
-      +paginate(accounts, '/accounts', query)
 
     hr
     a.btn.btn-primary(href='/accounts/new') Make Bank Account

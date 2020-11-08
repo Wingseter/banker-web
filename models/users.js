@@ -23,13 +23,12 @@ function findOne(id, done){
 }
 
 function saveUser(user){
-    console.log(user)
     var sql = 'INSERT INTO users SET ? ';
     conn.query(sql, user, function (err, results) {
         if (err) {
             console.log(err);
         } else {
-            console.log(user);
+            // nothing
         }
     });
 }
