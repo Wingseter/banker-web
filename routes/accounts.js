@@ -2,7 +2,7 @@ const express = require('express');
 const catchErrors = require('../lib/async-error');
 const Account = require('../models/account');
 
-const router = express.Router();
+var router = express.Router();
 
 function needAuth(req, res, next) {
     if (req.isAuthenticated()) {
@@ -12,8 +12,6 @@ function needAuth(req, res, next) {
         res.redirect('/signin');
     }
 }
-
-
 
 function validateForm(form, options) {
     var password = form.password || "";
@@ -46,14 +44,12 @@ function validateForm(form, options) {
 }
 
 /* GET accounts listing. */
-router.get('/', needAuth, catchErrors(async (req, res, next) => {
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+router.get('/', needAuth, catchErrors(async(req, res, next) => {
     const user = req.user.id;
 
     const term = req.query.term;
-    var accounts = await Account.getById(user);
-    var total = await Account.countById(user) || 0;
+    var accounts = await Account.getByUser(user);
+    var total = await Account.countByUser(user) || 0;
 
     console.log(accounts);
     console.log(total);
@@ -65,19 +61,32 @@ router.get('/new', needAuth, (req, res, next) => {
     res.render('accounts/new', { account: {} });
 });
 
+router.get('/:id/input', catchErrors(async (req, res, next) => {
+    const account = await Account.findById(req.params.id);
+    console.log(account);
+  
+    res.render('accounts/input', { account: account});
+}));
+
+router.get('/:id/output', catchErrors(async (req, res, next) => {
+    const account = await Account.findById(req.params.id);
+    console.log(account);
+  
+    res.render('accounts/output', { account: account});
+}));
+
 router.get('/:id/edit', needAuth, catchErrors(async (req, res, next) => {
     const account = await Account.findById(req.params.id);
     res.render('accounts/edit', { account: account });
 }));
 
 router.get('/:id', catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id).populate('author');
-    const answers = await Answer.find({ account: account.id }).populate('author');
-    account.numReads++;    // TODO: 동일한 사람이 본 경우에 Read가 증가하지 않도록???
-
-    await account.save();
-    res.render('accounts/show', { account: account, answers: answers });
+    const account = await Account.findById(req.params.id);
+    console.log(account);
+  
+    res.render('accounts/show', { account: account});
 }));
+
 
 router.put('/:id', catchErrors(async (req, res, next) => {
     const account = await Account.findById(req.params.id);
@@ -117,6 +126,55 @@ router.post('/', needAuth, catchErrors(async (req, res, next) => {
     };
     await Account.save(account);
     req.flash('success', 'Successfully make account');
+    res.redirect('/accounts');
+}));
+
+
+function validateMoney(form, options) {
+    var money = form.money || "";
+  
+    if (!money) {
+        return '돈을 입력하세요.';
+    }
+
+    if (money <= 0) {
+        return '1원 이상 입력하세요';
+    }
+
+    return null;
+}
+
+router.post('/:id/input', needAuth, catchErrors(async (req, res, next) => {
+    var err = validateMoney(req.body, {needPassword: true});
+    if (err) {
+      req.flash('danger', err);
+      return res.redirect('back');
+    }
+    const input = req.body.money;
+    const dest = req.params.id
+    await Account.saveMoney(dest, input);
+    req.flash('success', 'Successfully Save Money');
+    res.redirect('/accounts');
+}));
+
+
+router.post('/:id/output', needAuth, catchErrors(async (req, res, next) => {
+    var err = validateMoney(req.body, {needPassword: true});
+    if (err) {
+      req.flash('danger', err);
+      return res.redirect('back');
+    }
+    
+    // 출금할 돈이 더 많으면 못뺌
+    const account = await Account.findById(req.params.id);
+    if(account.mondy - req.body.money < 0) {
+        req.flash('danger', '출금할 돈이 부족합니다.');
+        return res.redirect('back');
+    }
+    const output = req.body.money;
+    const dest = req.params.id
+    await Account.withdrawMoney(dest, output);
+    req.flash('success', 'Successfully withdraw Money');
     res.redirect('/accounts');
 }));
 

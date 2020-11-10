@@ -2,13 +2,7 @@
 
 .row
   .col-sm
-    .numbers.
-      #[span.number.num-votes= account.numLikes] likes,
-      #[span.number.num-answers= account.numAnswers] answers,
-      #[span.number.num-views= account.numReads] reads
-  .col-sm
+    a.title(href=`/accounts/${account.id}`) 계좌번호: #{account.id}
+    h3(href=`/accounts/${account.id}`) 잔액: #{account.money}
     .author
-      | asked on #{moment(account.createdAt).format('YYYY-MM-DD')}
-      if account.author
-        | 
-        | by #[a(href=`/users/${account.author.id}`)= account.author.name] 
+      | create at #{moment(account.date).format('YYYY-MM-DD')}

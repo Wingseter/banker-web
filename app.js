@@ -12,7 +12,6 @@ var passport = require('passport');
 var flash = require('connect-flash');
 var app = express();
 var conn = require('./lib/database');
-
 var passportConfig = require('./lib/passport-config');
 
 // view engine setup

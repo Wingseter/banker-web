@@ -19,8 +19,7 @@ block content
       .accounts
         each account in accounts
           .account
-            a.title(href=`/accounts/${account.id}`)= account.id
-            //- include _account
+            include _account
 
 
     hr
