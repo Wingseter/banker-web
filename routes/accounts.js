@@ -70,9 +70,13 @@ router.get('/:id/input', catchErrors(async (req, res, next) => {
 
 router.get('/:id/output', catchErrors(async (req, res, next) => {
     const account = await Account.findById(req.params.id);
-    console.log(account);
   
     res.render('accounts/output', { account: account});
+}));
+
+router.get('/:id/sendmoney', needAuth, catchErrors(async (req, res, next) => {
+    const account = await Account.findById(req.params.id);
+    res.render('accounts/sendmoney', { account: account });
 }));
 
 router.get('/:id/edit', needAuth, catchErrors(async (req, res, next) => {
@@ -150,9 +154,9 @@ router.post('/:id/input', needAuth, catchErrors(async (req, res, next) => {
       req.flash('danger', err);
       return res.redirect('back');
     }
-    const input = req.body.money;
+    const money = req.body.money;
     const dest = req.params.id
-    await Account.saveMoney(dest, input);
+    await Account.saveMoney(dest, money);
     req.flash('success', 'Successfully Save Money');
     res.redirect('/accounts');
 }));
@@ -172,9 +176,24 @@ router.post('/:id/output', needAuth, catchErrors(async (req, res, next) => {
         return res.redirect('back');
     }
     const output = req.body.money;
-    const dest = req.params.id
+    const dest = req.params.id;
     await Account.withdrawMoney(dest, output);
     req.flash('success', 'Successfully withdraw Money');
+    res.redirect('/accounts');
+}));
+
+
+router.post('/:id/sendmoney', needAuth, catchErrors(async (req, res, next) => {
+    var err = validateMoney(req.body, {needPassword: true});
+    if (err) {
+      req.flash('danger', err);
+      return res.redirect('back');
+    }
+    const money = req.body.money;
+    const from = req.params.id;
+    const to = req.body.to;
+    await Account.sendMoney(from, to, money);
+    req.flash('success', 'Successfully send Money');
     res.redirect('/accounts');
 }));
 

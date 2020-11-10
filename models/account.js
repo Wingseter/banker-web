@@ -23,7 +23,7 @@ function getByUser(user){
 
 function save(account){
     var sql = 'INSERT INTO accounts SET ? ';
-    DB('GET', sql, account).then(function (err, results) {
+    DB('',sql, account).then(function (err, results) {
         if (err) {
             console.log(err);
         } else {
@@ -63,9 +63,21 @@ function withdrawMoney(id, money){
     return promise;
 }
 
+
+function sendMoney(from, to, money){
+    var sql = 'update accounts set money = money -  ? WHERE id =?;update accounts set money = money +  ? WHERE id=?';
+    var promise = new Promise((resolve,reject) => {
+        DB('GET', sql, [money, from, money, to]).then(function (res) {
+            resolve(res.row[0]);
+        }); 
+    });
+    return promise;
+}
+
 module.exports.countByUser = countByUser;
 module.exports.getByUser = getByUser;
 module.exports.save = save;
 module.exports.findById = findById;
 module.exports.saveMoney = saveMoney;
 module.exports.withdrawMoney = withdrawMoney;
+module.exports.sendMoney = sendMoney;

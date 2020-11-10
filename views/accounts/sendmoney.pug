@@ -1,0 +1,13 @@
+extends ../layout
+
+block content
+    .container
+        h1.main-title 계좌 이체
+            form(action=`/accounts/${account.id}/sendmoney`, method="POST")
+                .form-group
+                    label(for="to") 보낼 계좌번호를 입력하세요
+                    input.form-control(type="text", name="to", placeholder="계좌번호")
+                .form-group
+                    label(for="money") 보낼 금액을 입력하세요
+                    input.form-control(type="text", name="money", placeholder="금액")
+                button.btn.btn-outline-primary(type="submit") 송금

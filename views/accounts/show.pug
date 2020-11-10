@@ -8,7 +8,6 @@ block content
         h2 종류: #{account.type}
         h2 카드 여부: #{account.card}
         .question.show
-            include _account
 
             .buttons
                 a.btn.btn-primary(href=`/accounts/${account.id}/input`) 입금
