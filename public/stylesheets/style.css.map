@@ -4,7 +4,8 @@
     "sources": [
         "style.scss",
         "base.scss",
-        "signin.scss"
+        "signin.scss",
+        "list.scss"
     ],
     "names": [],
     "file": "style.css"

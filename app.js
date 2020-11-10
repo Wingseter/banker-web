@@ -8,10 +8,10 @@ var accoutRouter = require('./routes/accounts');
 var session = require('express-session');
 var methodOverride = require('method-override');
 var indexRouter = require('./routes/index');
+var cardRouter = require('./routes/cards');
 var passport = require('passport');
 var flash = require('connect-flash');
 var app = express();
-var conn = require('./lib/database');
 var passportConfig = require('./lib/passport-config');
 
 // view engine setup
@@ -56,6 +56,7 @@ app.use(function(req, res, next) {
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/accounts', accoutRouter);
+app.use('/cards', cardRouter);
 require('./routes/auth')(app, passport);
 
 // public 디렉토리에 있는 내용은 static하게 service하도록.

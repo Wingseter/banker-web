@@ -1,0 +1,9 @@
+CREATE TABLE `bank`.`cards` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `date` DATETIME NOT NULL,
+  `max` INT NOT NULL,
+  `lastuse` DATETIME NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `user` INT NOT NULL,
+  `account` INT NOT NULL,
+  PRIMARY KEY (`id`));

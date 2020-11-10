@@ -1,0 +1,8 @@
+.content= card.content
+
+.row
+  .col-sm
+    a.title(href=`/accounts/${card.id}`) 카드 번호: #{card.id}
+    h3(href=`/accounts/${account.id}`) 잔액: #{account.money}
+    .author
+      | create at #{moment(account.date).format('YYYY-MM-DD')}

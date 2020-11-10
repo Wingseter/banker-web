@@ -1,6 +1,6 @@
 const express = require('express');
 const catchErrors = require('../lib/async-error');
-const Account = require('../models/account');
+const Card = require('../models/card');
 
 var router = express.Router();
 
@@ -28,17 +28,6 @@ function validateForm(form, options) {
         return 'type is required.';
     }
 
-    if (!form.password && options.needPassword) {
-        return 'Password is required.';
-    }
-
-    if (form.password !== form.password_confirmation) {
-        return 'Passsword do not match.';
-    }
-
-    if (form.password.length < 6) {
-        return 'Password must be at least 6 characters.';
-    }
 
     return null;
 }
@@ -46,19 +35,17 @@ function validateForm(form, options) {
 /* GET accounts listing. */
 router.get('/', needAuth, catchErrors(async(req, res, next) => {
     const user = req.user.id;
-
     const term = req.query.term;
-    var accounts = await Account.getByUser(user);
-    var total = await Account.countByUser(user) || 0;
 
-    console.log(accounts);
-    console.log(total);
-    res.render('accounts/index', { accounts: accounts, term: term, query: req.query, total: total });
+    var cards = await Card.getByUser(user);
+    var total = await Card.countByUser(user) || 0;
+
+    res.render('cards/index', { cards: cards, term: term, query: req.query, total: total });
 }));
 
 
 router.get('/new', needAuth, (req, res, next) => {
-    res.render('accounts/new', { account: {} });
+    res.render('cards/new', { cards: {} });
 });
 
 router.get('/:id/input', catchErrors(async (req, res, next) => {
@@ -134,75 +121,5 @@ router.post('/', needAuth, catchErrors(async (req, res, next) => {
 }));
 
 
-function validateMoney(form, options) {
-    var money = form.money || "";
-  
-    if (!money) {
-        return '돈을 입력하세요.';
-    }
-
-    if (money <= 0) {
-        return '1원 이상 입력하세요';
-    }
-
-    return null;
-}
-
-router.post('/:id/input', needAuth, catchErrors(async (req, res, next) => {
-    var err = validateMoney(req.body, {needPassword: true});
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
-    const money = req.body.money;
-    const dest = req.params.id
-    await Account.saveMoney(dest, money);
-    req.flash('success', 'Successfully Save Money');
-    res.redirect('/accounts');
-}));
-
-
-router.post('/:id/output', needAuth, catchErrors(async (req, res, next) => {
-    var err = validateMoney(req.body, {needPassword: true});
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
-    
-    // 출금할 돈이 더 많으면 못뺌
-    const account = await Account.findById(req.params.id);
-    if(account.mondy - req.body.money < 0) {
-        req.flash('danger', '출금할 돈이 부족합니다.');
-        return res.redirect('back');
-    }
-    const output = req.body.money;
-    const dest = req.params.id;
-    await Account.withdrawMoney(dest, output);
-    req.flash('success', 'Successfully withdraw Money');
-    res.redirect('/accounts');
-}));
-
-
-router.post('/:id/sendmoney', needAuth, catchErrors(async (req, res, next) => {
-    var err = validateMoney(req.body, {needPassword: true});
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
-
-     // 송금할 돈이 더 많으면 못뺌
-     const account = await Account.findById(req.params.id);
-     if(account.mondy - req.body.money < 0) {
-         req.flash('danger', '송금할 돈이 부족합니다.');
-         return res.redirect('back');
-     }
-
-    const money = req.body.money;
-    const from = req.params.id;
-    const to = req.body.to;
-    await Account.sendMoney(from, to, money);
-    req.flash('success', 'Successfully send Money');
-    res.redirect('/accounts');
-}));
 
 module.exports = router;
