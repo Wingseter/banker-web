@@ -1,7 +1,7 @@
 const express = require('express');
 const catchErrors = require('../lib/async-error');
 const Card = require('../models/card');
-
+const Account = require('../models/account')
 var router = express.Router();
 
 function needAuth(req, res, next) {
@@ -14,21 +14,29 @@ function needAuth(req, res, next) {
 }
 
 function validateForm(form, options) {
-    var password = form.password || "";
+    var max = form.max || "";
     var type = form.type || "";
+    var account = form.account || "";
 
-    password = password.trim();
+    max = max.trim();
     type = type.trim();
+    account = account.trim();
 
-    if (!password) {
-        return 'password is required.';
+    if (!max) {
+        return 'Card limit is required.';
     }
 
     if (!type) {
         return 'type is required.';
     }
 
+    if (!type) {
+        return 'type is required.';
+    }
 
+    if (max <= 0) {
+        return 'Max must be ';
+    }
     return null;
 }
 
@@ -48,39 +56,25 @@ router.get('/new', needAuth, (req, res, next) => {
     res.render('cards/new', { cards: {} });
 });
 
-router.get('/:id/input', catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id);
-    console.log(account);
-  
-    res.render('accounts/input', { account: account});
-}));
-
-router.get('/:id/output', catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id);
-  
-    res.render('accounts/output', { account: account});
-}));
-
-router.get('/:id/sendmoney', needAuth, catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id);
-    res.render('accounts/sendmoney', { account: account });
+router.get('/:id/use', catchErrors(async (req, res, next) => {
+    const card = await Card.findById(req.params.id);
+    res.render('cards/use', { card: card});
 }));
 
 router.get('/:id/edit', needAuth, catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id);
+    const account = await Card.findById(req.params.id);
     res.render('accounts/edit', { account: account });
 }));
 
 router.get('/:id', catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id);
-    console.log(account);
-  
-    res.render('accounts/show', { account: account});
+    const card = await Card.findById(req.params.id);
+
+    res.render('cards/show', { card: card});
 }));
 
 
 router.put('/:id', catchErrors(async (req, res, next) => {
-    const account = await Account.findById(req.params.id);
+    const card = await Card.findById(req.params.id);
 
     if (!account) {
         req.flash('danger', 'Not exist account');
@@ -102,23 +96,68 @@ router.delete('/:id', needAuth, catchErrors(async (req, res, next) => {
 }));
 
 router.post('/', needAuth, catchErrors(async (req, res, next) => {
+    console.log("test");
     var err = validateForm(req.body, {needPassword: true});
     if (err) {
       req.flash('danger', err);
       return res.redirect('back');
     }
     const user = req.user;
-    var account = {
-        type: req.body.type,
-        money: 0,
-        card: false,
+    var card = {
         date: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        user: user.id
+        max: req.body.max,
+        lastuse: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        type: req.body.type,
+        user: user.id,
+        account: req.body.account,
     };
-    await Account.save(account);
-    req.flash('success', 'Successfully make account');
-    res.redirect('/accounts');
+    await Card.save(card);
+    req.flash('success', 'Successfully make card');
+    res.redirect('/cards');
 }));
+
+
+function cardForm(form, options) {
+    console.log(form);
+    var content = form.content || "";
+    var money = form.money;
+
+    content = content.trim();
+
+    if (!content) {
+        return 'content is required.';
+    }
+
+    if (!money) {
+        return 'money is required.';
+    }
+
+    if (money <= 0) {
+        return '결제 거부: 1원 이상 써야합니다.';
+    }
+    return null;
+}
+
+
+router.post('/:id/use', needAuth, catchErrors(async (req, res, next) => {
+    var err = cardForm(req.body, {needPassword: true});
+    if (err) {
+      req.flash('danger', err);
+      return res.redirect('back');
+    }
+    var card = await Card.findById(req.params.id);
+    var account = await Account.findById(card.account);
+    var money = req.body.money;
+    
+    if (account.money < money){
+        req.flash('danger', "결제거부: 잔액이 부족합니다.");
+        return res.redirect('back');
+    }
+    await Card.useCard(card.id, money);
+    req.flash('success', '결제가 완료 되었습니다');
+    res.redirect('/cards');
+}));
+
 
 
 

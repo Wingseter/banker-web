@@ -1,0 +1,27 @@
+extends ../layout
+
+block content
+    .container
+        h1.main-title 카드번호: #{card.id}
+
+        h2 카드 종류: #{card.type}
+        h2 카드 한도: #{card.max}
+        h2 마지막 사용 일자: #{moment(card.lastuse).format('YYYY-MM-DD')}
+        h2 마지막 생성 일자:#{moment(card.date).format('YYYY-MM-DD')}
+        .question.show
+            .buttons
+                a.btn.btn-primary(href=`/cards/${card.id}/use`) 카드 사용
+             
+        //- if question.numAnswers > 0
+        //-     hr
+        //-     h3 #{question.numAnswers} Answer(s)
+        //-     .answers.show
+        //-         each answer in answers
+        //-             include _answer
+
+        //- form(action=`/questions/${question.id}/answers`, method='POST')
+        //-     .form-group
+        //-         label(for='answer') Your Answer
+        //-         textarea.form-control(name="content", rows="5")
+        //-     button.btn.btn-primary(type="submit") Post Your Answer
+
