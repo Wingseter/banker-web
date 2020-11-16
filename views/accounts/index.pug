@@ -4,21 +4,19 @@ include ../includes/_paginate
 
 block content
   .container
-    form.form-inline.search-input-group(action='/accounts', method='GET')
-      i.fa.fa-search
-      input.form-control.mr-sm-2(type='text', name='term', placeholder='Search', aria-label='Search', value=term)
-
+    
     h1.main-title 
       | Bank Account
       if total > 0
         .small Total #{total} account(s)
-
+    
+    h1.font-weight-light.align-middle  총액: #{moneyTotal}
     if total <= 0 
       .alert.alert-info No accounts available yet
     else
-      .accounts
+      .lists
         each account in accounts
-          .account
+          .list.card.mb-3
             include _account
 
 

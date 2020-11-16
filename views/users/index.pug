@@ -1,0 +1,28 @@
+extends ../layout
+
+block content
+  .container
+    h1.main-title Users
+    
+    table.table.table-hover
+      thead
+        tr
+          th Name
+          th Email
+          th address
+          th 
+      tbody
+        each user in users
+          if(currentUser.id != user.id)
+            tr
+              td
+                a(href=`/users/${user.id}`)= user.name
+              td= user.email
+              td= user.address
+                td
+                  a.btn.btn-sm.btn-outline-secondary(href=`/users/${user.id}/edit`) 
+                    | #[i.fa.fa-pencil] Edit
+                  | 
+                  a.btn.btn-sm.need-confirm-btn.btn-outline-danger(href=`/users/${user.id}?_method=DELETE`)
+                    | #[i.fa.fa-trash] Delete
+    a.btn.btn-primary(href='/users/new') #[i.fa.fa-plus] Register a new user

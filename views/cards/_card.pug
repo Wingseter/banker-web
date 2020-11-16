@@ -1,8 +1,21 @@
 .content= card.content
 
-.row
-  .col-sm
-    a.title(href=`/cards/${card.id}`) 카드 번호: #{card.id}
-    h3(href=`/cards/${card.id}`) 카드 종류: #{card.type}
+.card.col-sm-6.shadow.p-3.mb-5.bg-white.rounded
+  .card-body
+    dl.row
+      dt.col-sm-6
+        a.title(href=`/cards/${card.id}`) #{card.cardname}
+      dd.col-sm-6  
+        hr
+      dt.col-sm-4
+        h5.card-title 카드 번호
+      dd.col-sm-8  
+        h5.card-title #{card.id}
+      dt.col-sm-4
+        h6.card-subtitle.md-2.text-muted 카드 종류
+      dd.col-sm-8  
+        h6.card-subtitle.md-2.text-muted #{card.type}
+
+      
     .author
-      | create at #{moment(card.date).format('YYYY-MM-DD')}
+          | 카드 생성일: #{moment(card.date).format('YYYY-MM-DD')}

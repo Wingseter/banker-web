@@ -2,26 +2,44 @@ extends ../layout
 
 block content
     .container
-        h1.main-title 카드번호: #{card.id}
+        h1.main-title "#{card.cardname} "카드 정보
+        dl.row
+            dt.col-sm-3 카드 종류
+            dd.col-sm-9 #{card.type}
 
-        h2 카드 종류: #{card.type}
-        h2 카드 한도: #{card.max}
-        h2 마지막 사용 일자: #{moment(card.lastuse).format('YYYY-MM-DD')}
-        h2 마지막 생성 일자:#{moment(card.date).format('YYYY-MM-DD')}
-        .question.show
+            dt.col-sm-3 카드 한도 금액
+            dd.col-sm-9 #{card.max}
+
+            dt.col-sm-3 카드 결제 일자
+            dd.col-sm-9 #{moment(card.lastuse).format('YYYY-MM-DD')}
+
+            dt.col-sm-3 카드 신청 일자
+            dd.col-sm-9 #{moment(card.date).format('YYYY-MM-DD')}
+
+            dt.col-sm-3 예금계좌ID
+            dd.col-sm-9 #{card.account}
+
+        .list.show
             .buttons
+                p
                 a.btn.btn-primary(href=`/cards/${card.id}/use`) 카드 사용
-             
-        //- if question.numAnswers > 0
-        //-     hr
-        //-     h3 #{question.numAnswers} Answer(s)
-        //-     .answers.show
-        //-         each answer in answers
-        //-             include _answer
+                | 
+                a.btn.btn-outline-primary(href=`/cards/${card.id}/edit`) Edit
+                | 
+                a.btn.btn-outline-danger.need-confirm-btn(href=`/cards/${card.id}?_method=DELETE`) Delete
 
-        //- form(action=`/questions/${question.id}/answers`, method='POST')
-        //-     .form-group
-        //-         label(for='answer') Your Answer
-        //-         textarea.form-control(name="content", rows="5")
-        //-     button.btn.btn-primary(type="submit") Post Your Answer
+        h1.main-title 카드 사용자 정보
+        dl.row
+            dt.col-sm-3 사용자 이름
+            dd.col-sm-9 #{card.name}
+
+            dt.col-sm-3 고객 주민번호
+            dd.col-sm-9 #{card.user}
+
+            dt.col-sm-3 고객 주소
+            dd.col-sm-9 #{card.address}
+
+
+             
+      
 

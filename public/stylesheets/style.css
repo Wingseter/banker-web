@@ -1,8 +1,6 @@
 @import url("https://fonts.googleapis.com/css?family=Nanum+Gothic|Raleway|Roboto&display=swap");
 body {
   font-family: 'Nanum Gothic', 'Roboto', cursive;
-  margin-top: 100px;
-  padding-top: 1em;
 }
 
 body > .main-content {
@@ -17,10 +15,8 @@ a:hover {
   margin-top: -1em;
   min-height: 20em;
   color: #fff;
-  text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.3);
-  background-color: #fff !important;
+  background-color: #f5f4f4 !important;
 }
-
 .jumbotron img {
   -o-object-fit: cover;
      object-fit: cover;
@@ -47,10 +43,6 @@ a:hover {
   margin: 1em 0 0.5em 0;
   border-bottom: 1px solid #eee;
   color: #002A3A;
-}
-
-.header > .navbar {
-  background-color: #002A3A !important;
 }
 
 .search-input-group {
@@ -110,4 +102,229 @@ a:hover {
 .form-signin .sub {
   margin: 1em 0;
 }
+
+.main-title .small {
+  float: right;
+  font-size: 1rem;
+  color: #bbb;
+}
+
+.lists {
+  line-height: 160%;
+  margin-bottom: 1em;
+}
+
+.lists .title {
+  font-size: 1.3rem;
+}
+
+.lists .content {
+  color: #aaa;
+}
+
+.lists .tags {
+  margin: 0.5em 0;
+}
+
+.author {
+  text-align: right;
+  font-size: 0.8em;
+  color: #81bbf2;
+}
+
+.numbers {
+  text-align: left;
+  color: #81bbf2;
+}
+
+.number {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #0f5ca6;
+}
+
+.list .content {
+  max-height: 5em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.show .content {
+  white-space: pre-wrap;
+}
+
+.show .buttons {
+  margin: 1em 0;
+}
+
+.show .answer {
+  position: relative;
+  margin-bottom: 1em;
+}
+
+.show .answer .like-badge {
+  text-align: center;
+  padding: 0.5em;
+  position: absolute;
+}
+
+.show .answer .like-badge .button {
+  font-size: 0.8em;
+}
+
+.show .answer .card-body {
+  padding-left: 4em;
+}
+
+.show .answer .content {
+  margin-bottom: 0.5em;
+  color: #bbb;
+}
+
+/*  */
+body {
+  background-color: #f5f4f4;
+  margin-top: 100px;
+}
+nav {
+  background-color: #ffffff;
+  box-shadow: 0 2px 2px -2px rgba(0,0,0,.4);
+  height: 65px;
+}
+.navbar img {
+  width: 150px;
+}
+.hero {
+  margin-bottom: 120px;
+  /* box-shadow: 0 2px 2px 1px rgba(0,0,0,0.4); */
+  
+}
+.hero img {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border-radius: 4px;
+}
+a.nav-link {
+  color: #393e46 !important;
+}
+li.nav-item:hover {
+  color: rgba(0, 0, 0,1) !important;
+}
+li.nav-item {
+  padding: 0px 8px;
+}
+a.signout {
+  color: #ff4b5c !important;
+}
+.logo img{
+  margin-bottom: 20px;
+  opacity: 0.7;
+}
+.footer{
+  background-color: #333333;
+  width: 100%;
+  height: 250px;
+  display: flex;
+  align-items: center;
+  color: #ffffff;
+  font-weight: 400;
+  font-size: 12px;
+  min-width: 1170px;
+}
+.container {
+  min-width: 1170px;
+}
+.footer .container {
+  min-width: 1140px;
+}
+.footer p{
+  cursor: pointer;
+}
+.footer ul.itemBox li.item p:hover{
+  text-decoration: underline;
+  color: rgba(255,255,255,0.5);
+}
+.footer a{
+  cursor: pointer;
+}
+.footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #686d76;
+}
+.italic{
+  font-style: italic;
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.7);
+}
+
+ul.itemBox{
+  padding: 0;
+  margin: 0;
+}
+ul.itemBox li.item{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+
+}
+ul.itemBox li.item embed{
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+}
+.logo{
+  width: 25%;
+}
+h3.mainText{
+  text-align: center;
+  margin-bottom: 60px;
+  font-weight: 700;
+}
+.mainpage .container{
+  margin-bottom: 120px;
+}
+.mainpage .container .textBox{
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 400;
+}
+.mainpage .container .textBox h3{
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 30px;
+}
+.mainpage li{
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0 10px;
+}
+.mainpage ul {
+  margin: 0;
+  padding: 0;
+}
+.mainpage .container .leftbox {
+  width: 40%;
+  background-color: #bbbfca;
+  box-sizing: border-box;
+  padding: 5%;
+}
+.mainpage .container .rightbox {
+  width: 40%;
+  background-color: #bbbfca;
+  box-sizing: border-box;
+  padding: 5%;
+}
+
+
+/*  */
+
+
+
+
 /*# sourceMappingURL=style.css.map */

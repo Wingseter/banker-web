@@ -26,7 +26,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 
 // Pug의 local에 moment라이브러리와 querystring 라이브러리를 사용할 수 있도록.
-app.locals.moment = require('moment');
+moment = require('moment');
+require('moment-timezone');
+moment.tz.setDefault("Asia/Seoul");
+app.locals.moment = moment;
 app.locals.querystring = require('querystring');
 
 // _method를 통해서 method를 변경할 수 있도록 함. PUT이나 DELETE를 사용할 수 있도록.

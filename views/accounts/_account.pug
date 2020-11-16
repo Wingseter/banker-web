@@ -2,7 +2,15 @@
 
 .row
   .col-sm
-    a.title(href=`/accounts/${account.id}`) 계좌번호: #{account.id}
-    h3(href=`/accounts/${account.id}`) 잔액: #{account.money}
-    .author
-      | create at #{moment(account.date).format('YYYY-MM-DD')}
+    .card-body
+      dl.row
+        dt.col-sm-3
+          a.title(href=`/accounts/${account.id}`) 계좌번호: 
+        dd.col-sm-9
+          a.title(href=`/accounts/${account.id}`) #{account.id}
+        dt.col-sm-3
+          h2.font-weight-bold 잔액 
+        dd.col-sm-9 
+          h2.font-weight-bold #{account.money}
+      .author
+        | 계좌 생성일 #{moment(account.date).format('YYYY-MM-DD')}

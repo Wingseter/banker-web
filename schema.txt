@@ -7,3 +7,13 @@ CREATE TABLE `bank`.`cards` (
   `user` INT NOT NULL,
   `account` INT NOT NULL,
   PRIMARY KEY (`id`));
+
+CREATE TABLE `bank`.`history` (
+  `account` INT NOT NULL,
+  `date` DATETIME NOT NULL,
+  `id` INT NOT NULL,
+  `type` VARCHAR(45) NOT NULL,
+  `content` VARCHAR(45) NOT NULL,
+  `money` VARCHAR(45) NOT NULL,
+  `left` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`account`, `date`, `id`));

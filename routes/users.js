@@ -54,23 +54,29 @@ function validateForm(form, options) {
     return 'Passsword do not match.';
   }
 
-  if (form.password.length < 6) {
+  if (form.password.length < 6 && options.needPassword) {
     return 'Password must be at least 6 characters.';
+  }
+
+  var regPhone = /^((01[1|6|7|8|9])[1-9]+[0-9]{6,7})|(010[1-9][0-9]{7})$/;
+  if (regPhone.test(phone)){
+    return 'input valid phone number'
   }
 
   return null;
 }
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
-});
+router.get('/', needAuth, catchErrors(async (req, res, next) => {
+  const users = await User.getAllUser();
+  res.render('users/index', {users: users});
+}));
 
 router.get('/new', (req, res, next) => {
   res.render('users/new', {messages: req.flash()});
 });
 
-router.get('/:id/edit', needAuth, catchErrors(async (req, res, next) => {
+router.get('/:id/edit',needAuth, catchErrors(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   res.render('users/edit', {user: user});
 }));
@@ -100,4 +106,53 @@ router.post('/', catchErrors(async (req, res, next) => {
   req.flash('success', 'Registered successfully. Please sign in.');
   res.redirect('/');
 }));
+
+router.put('/:id', needAuth, catchErrors(async (req, res, next) => {
+  const err = validateForm(req.body, {needPassword: false});
+  if (err) {
+    req.flash('danger', err);
+    return res.redirect('back');
+  }
+
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    req.flash('danger', 'Not exist user.');
+    return res.redirect('back');
+  }
+
+  if (req.body.current_password != user.password) {
+    req.flash('danger', 'Current password invalid.');
+    return res.redirect('back');
+  }
+
+  var email = await User.findOne({email: req.body.email});
+  console.log('USER???', email);
+  if (email) {
+    req.flash('danger', 'user email already exists.');
+    return res.redirect('back');
+  }
+
+  user.name = req.body.name;
+  user.email = req.body.email;
+  user.address = req.body.address;
+  user.birth = req.body.birth;
+  if(req.body.password){
+    user.password = req.body.password;
+  }
+  await User.updateUser(user);
+  req.flash('success', 'Updated successfully.');
+  res.redirect('/users');
+}));
+
+router.delete('/:id', needAuth, catchErrors(async (req, res, next) => {
+  await User.findOneAndRemove(req.params.id);
+  req.flash('success', 'Deleted Successfully.');
+  res.redirect('/users');
+}));
+
+router.get('/:id',needAuth, catchErrors(async (req, res, next) => {
+  const user = await User.findById(req.params.id);
+  res.render('users/show', {user: user});
+}));
+
 module.exports = router;

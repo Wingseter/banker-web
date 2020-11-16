@@ -1,17 +1,19 @@
 .header.clearfix
-    nav.navbar.navbar-expand-md.navbar-dark.bg-dark.fixed-top
+    nav.navbar.navbar-expand-md.navbar-dark.fixed-top
         .container
             a.navbar-brand(href="/")
-                img(src="/images/logo.png")
+                img(src="/images/logoBlack.png")
             button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarsExampleDefault", aria-controls="navbarsExampleDefault", aria-expanded="false", aria-label="Toggle navigation")
                 span.navbar-toggler-icon
 
             #navbarsExampleDefault.collapse.navbar-collapse
                 ul.navbar-nav.ml-auto
                     li.nav-item
-                            a.nav-link(href="/cards") Card
+                        a.nav-link(href="/cards") Card
                     li.nav-item
-                            a.nav-link(href="/accounts") Account
+                        a.nav-link(href="/accounts") Account
+                    li.nav-item
+                        a.nav-link(href="/users") Users
                     if (!currentUser) 
                         li.nav-item
                             a.nav-link(href='/signin') Signin
@@ -19,8 +21,8 @@
                             a.nav-link(href='/users/new') Signup
                     else
                         li.nav-item
-                            a.nav-link(href=`/users/${currentUser._id}`) My Profile
+                            a.nav-link(href=`/users/${currentUser.id}`) My Profile
                         li.nav-item
-                            a.nav-link(href='/signout') Signout
+                            a.signout.nav-link(href='/signout') Signout
                 
                     

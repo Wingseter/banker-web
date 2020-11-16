@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+    .container
+        h1.main-title "#{user.name}"님의 정보
+                    
+        dl.row
+            dt.col-sm-3 이름
+            dd.col-sm-9= user.name
+
+            dt.col-sm-3 E-mail
+            dd.col-sm-9= user.email
+
+            dt.col-sm-3 고객 주민번호
+            dd.col-sm-9= user.id
+
+            dt.col-sm-3 주소
+            dd.col-sm-9= user.address
+
+            dt.col-sm-3 전화번호
+            dd.col-sm-9= user.phone
+
+
+        
+            hr
+            p
+                a.btn.btn-outline-secondary(href='/users/') List
+                | 
+                a.btn.btn-outline-primary(href=`/users/${user.id}/edit`) Edit
+                | 
+                if(currentUser.id != user.id)
+                    a.btn.btn-outline-danger.need-confirm-btn(href=`/users/${user.id}?_method=DELETE`) Delete

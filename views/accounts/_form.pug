@@ -1,9 +1,7 @@
 .form-group
   label(for="type") Account type
-  input.form-control(type="text", name="type", placeholder="account type", value=account.title)
-.form-group
-  label(for="password") Account password
-  input.form-control(type="password", name="password", placeholder="password", value=account.title)
-.form-group
-  label(for='password_confirmation') Password Confirmation
-  input.form-control(type='password', id='password_confirmation', name='password_confirmation', placeholder='Password')
+  select.form-control(type="text", name="type", placeholder="account type", value=account.type)
+    option(value="청약 저축 통장")  청약 저축 통장
+    option(value="일반 통장")  일반 통장
+    option(value="적금 통장")  적금 통장
+    option(value="청년 미래 통장")  청년 미래 통장

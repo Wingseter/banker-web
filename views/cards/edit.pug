@@ -1,0 +1,8 @@
+extends ../layout
+
+block content
+  .container
+    h1.main-title Edit Card Information
+    form(action=`/cards/${cards.id}?_method=PUT`, method='POST')
+      include _form
+      button.btn.btn-outline-primary(type="submit") Update information

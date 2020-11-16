@@ -3,8 +3,11 @@ extends ../layout
 block content
     .container
         h1.main-title 입금
-            form(action=`/accounts/${account.id}/input`, method="POST")
-                .form-group
-                    label(for="money") 입금할 금액을 입력하세요
-                    input.form-control(type="text", name="money", placeholder="금액")
-                button.btn.btn-outline-primary(type="submit") 입금
+        form(action=`/accounts/${account.id}/input`, method="POST")
+            .form-group
+                label(for="money") 입금할 금액을 입력하세요
+                input.form-control(type="text", name="money", placeholder="금액")
+            .form-group
+                label(for="content") 입금 설명을 입력하세요
+                input.form-control(type="text", name="content", placeholder="내용")
+            button.btn.btn-outline-primary(type="submit") 입금
