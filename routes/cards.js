@@ -74,6 +74,7 @@ router.get('/:id/edit',needAuth, needAuth, catchErrors(async (req, res, next) =>
 
 router.get('/:id',needAuth, catchErrors(async (req, res, next) => {
     const card = await Card.findUserAndCardById(req.params.id);
+
     res.render('cards/show', { card: card});
 }));
 
@@ -133,7 +134,7 @@ router.post('/', needAuth, catchErrors(async (req, res, next) => {
     var state = await Account.getCardState(req.body.account);
     console.log(count);
     console.log(state);
-    if(count > 0 && state == 0){
+    if(count == 0 && state == 0){
         await Account.changeCardState(req.body.account);
     }
     await Card.save(card);
@@ -178,10 +179,14 @@ router.post('/:id/use', needAuth, catchErrors(async (req, res, next) => {
     }
 
     var card = await Card.findById(req.params.id);
+    if (!card) {
+        req.flash('danger', 'Not exist card');
+        return res.redirect('back');
+    }
     await Card.useCard(card.id, money);
 
     const dest = card.account;
-    const date = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
     var id = await AccHistory.getNewId(dest, date);
     id = id.id || 0;
 
@@ -196,7 +201,7 @@ router.post('/:id/use', needAuth, catchErrors(async (req, res, next) => {
         left: left,
     };
 
-    await Card.saveDate(date);
+    await Card.saveDate(date, card.id);
     await AccHistory.save(history);
     req.flash('success', '결제가 완료 되었습니다');
     res.redirect('/cards');

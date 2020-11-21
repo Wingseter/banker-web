@@ -66,7 +66,7 @@ function findById(id){
 
 function findAccountUserById(id){
     var sql2 = 'SELECT accounts.id AS id, accounts.money AS money, accounts.card AS card, accounts.type AS type,\
-    accounts.date AS date, users.name AS name, users.phone AS phone, users.id AS userid \
+    accounts.date AS date, users.name AS name, users.phone AS phone, users.id AS userid, users.email AS email \
     FROM users, accounts WHERE users.id = accounts.user AND accounts.id = ?';
     var promise = new Promise((resolve,reject) => {
         DB('GET', sql2, [id]).then(function (res) {
@@ -151,7 +151,6 @@ function getCardState(id){
     var sql = 'SELECT card FROM accounts WHERE id = ?';
     var promise = new Promise((resolve,reject) => {
         DB('GET', sql, id).then(function (res) {
-            console.log(res.row);
             resolve(res.row[0].card);
         }); 
     });

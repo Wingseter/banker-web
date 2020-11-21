@@ -18,13 +18,14 @@ function validateForm(form, options) {
   var address = form.address || "";
   var birth = form.name || "";
   var email = form.email || "";
-  var phone = form.email || "";
+  var phone = form.phone || "";
 
   name = name.trim();
   address = address.trim();
   birth = birth.trim();
   name = name.trim();
   email = email.trim();
+  phone = phone.trim();
 
   if (!name) {
     return 'Name is required.';
@@ -65,7 +66,53 @@ function validateForm(form, options) {
 
   return null;
 }
+function validateEditForm(form, options) {
+  var name = form.name || "";
+  var address = form.address || "";
+  var birth = form.name || "";
+  var phone = form.phone || "";
 
+  name = name.trim();
+  address = address.trim();
+  birth = birth.trim();
+  name = name.trim();
+  phone = phone.trim();
+
+  if (!name) {
+    return 'Name is required.';
+  }
+
+  if (!address) {
+    return 'address is required.';
+  }
+
+  if (!birth) {
+    return 'birth is required.';
+  }
+
+  if (!phone) {
+    return 'phone is required.';
+  }
+
+  if (!form.password && options.needPassword) {
+    return 'Password is required.';
+  }
+
+  if (form.password !== form.password_confirmation) {
+    return 'Passsword do not match.';
+  }
+
+  if (form.password.length < 6 && options.needPassword) {
+    return 'Password must be at least 6 characters.';
+  }
+
+  var regPhone = /^((01[1|6|7|8|9])[1-9]+[0-9]{6,7})|(010[1-9][0-9]{7})$/;
+  if (regPhone.test(phone)){
+    return 'input valid phone number'
+  }
+
+  return null;
+}
 /* GET users listing. */
 router.get('/', needAuth, catchErrors(async (req, res, next) => {
   const users = await User.getAllUser();
@@ -88,8 +135,7 @@ router.post('/', catchErrors(async (req, res, next) => {
     req.flash('danger', err);
     return res.redirect('back');
   }
-  var email = await User.findOne({email: req.body.email});
-  console.log('USER???', email);
+  var email = await User.findOne(req.body.email);
   if (email) {
     req.flash('danger', 'user email already exists.');
     return res.redirect('back');
@@ -100,6 +146,7 @@ router.post('/', catchErrors(async (req, res, next) => {
     address: req.body.address,
     birth: req.body.birth,
     phone: req.body.phone,
+    job: req.body.job,
     password: req.body.password,
   };
   await User.saveUser(user);
@@ -108,7 +155,7 @@ router.post('/', catchErrors(async (req, res, next) => {
 }));
 
 router.put('/:id', needAuth, catchErrors(async (req, res, next) => {
-  const err = validateForm(req.body, {needPassword: false});
+  const err = validateEditForm(req.body, {needPassword: false});
   if (err) {
     req.flash('danger', err);
     return res.redirect('back');
@@ -124,18 +171,12 @@ router.put('/:id', needAuth, catchErrors(async (req, res, next) => {
     req.flash('danger', 'Current password invalid.');
     return res.redirect('back');
   }
-
-  var email = await User.findOne({email: req.body.email});
-  console.log('USER???', email);
-  if (email) {
-    req.flash('danger', 'user email already exists.');
-    return res.redirect('back');
-  }
-
+  
   user.name = req.body.name;
-  user.email = req.body.email;
   user.address = req.body.address;
   user.birth = req.body.birth;
+  user.job = req.body.job;
+  user.phone = req.body.phone;
   if(req.body.password){
     user.password = req.body.password;
   }

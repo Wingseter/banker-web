@@ -26,7 +26,6 @@ function getAccountById(id) {
     var sql = 'SELECT account FROM cards WHERE id = ?;';
     var promise = new Promise((resolve,reject) => {
         DB('GET', sql, id).then(function (res) {
-            console.log(res.row);
             resolve(res.row[0].account);
         });
     });
@@ -84,8 +83,8 @@ function findUserAndCardById(id){
     return promise;
 }
 
-function saveDate(id, date){
-    var sql = 'update card set lastuse = ? WHERE id = ?;'
+function saveDate(date, id){
+    var sql = 'UPDATE cards SET lastuse = ? WHERE id = ?;'
     var promise = new Promise((resolve, reject) =>{
         DB('',sql, [date, id]).then(function (res) {   
             resolve(1);

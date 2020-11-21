@@ -61,10 +61,10 @@ function saveUser(user){
 
 function updateUser(user){
     var sql = 'UPDATE users SET email = ?, name = ?, birth = ?\
-    , phone = ?, password = ? WHERE id = ?';
+    , phone = ?, password = ? ,address = ?, job = ? WHERE id = ?';
     var promise = new Promise((resolve,reject) => {
         DB('',sql, [user.email, user.name, user.birth,
-             user.phone, user.password, user.id]).then(function (res) {
+             user.phone, user.password, user.address, user.job, user.id]).then(function (res) {
             resolve(res.row);
         });
     });

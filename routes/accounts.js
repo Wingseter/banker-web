@@ -40,18 +40,28 @@ router.get('/new', needAuth, (req, res, next) => {
 
 router.get('/:id/input',needAuth, catchErrors(async (req, res, next) => {
     const account = await Account.findById(req.params.id);    
-  
+    if (!account) {
+        req.flash('danger', 'Not exist account');
+        return res.redirect('back');
+    }
     res.render('accounts/input', { account: account});
 }));
 
 router.get('/:id/output',needAuth, catchErrors(async (req, res, next) => {
     const account = await Account.findById(req.params.id);
-  
+    if (!account) {
+        req.flash('danger', 'Not exist account');
+        return res.redirect('back');
+    }
     res.render('accounts/output', { account: account});
 }));
 
 router.get('/:id/sendmoney',needAuth, needAuth, catchErrors(async (req, res, next) => {
     const account = await Account.findById(req.params.id);
+    if (!account) {
+        req.flash('danger', 'Not exist account');
+        return res.redirect('back');
+    }
     res.render('accounts/sendmoney', { account: account });
 }));
 
@@ -71,7 +81,6 @@ router.get('/:id',needAuth, catchErrors(async (req, res, next) => {
     else{
         account.card = "카드 신청 안함";
     }
-    console.log(account);
     res.render('accounts/show', { account: account, historys: historys, histCount});
 }));
 
@@ -83,7 +92,7 @@ router.put('/:id', needAuth,catchErrors(async (req, res, next) => {
       return res.redirect('back');
     }
     const account = await Account.findById(req.params.id);
-
+ 
     if (!account) {
         req.flash('danger', 'Not exist account');
         return res.redirect('back');
@@ -145,7 +154,7 @@ router.post('/:id/input', needAuth, catchErrors(async (req, res, next) => {
     
     await Account.saveMoney(dest, money);
 
-    const date = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
     var id = await AccHistory.getNewId(dest, date);
 
     const left = await Account.getMoneyById(req.params.id);
@@ -189,7 +198,7 @@ router.post('/:id/output', needAuth, catchErrors(async (req, res, next) => {
     const dest = req.params.id;
     await Account.withdrawMoney(dest, money);
 
-    const date = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
     var id = await AccHistory.getNewId(dest, date);
     const left = await Account.getMoneyById(req.params.id);
 
@@ -232,7 +241,8 @@ router.post('/:id/sendmoney', needAuth, catchErrors(async (req, res, next) => {
     }
 
     const other = await Account.findById(req.body.to);
-    if (other.length == 0){
+
+    if (!other){
         req.flash('danger', "상대방이 존재하지 않습니다.");
         return res.redirect('back');
     }
@@ -241,7 +251,7 @@ router.post('/:id/sendmoney', needAuth, catchErrors(async (req, res, next) => {
     const to = req.body.to;
     await Account.sendMoney(from, to, money);
 
-    const date = new Date().toISOString().slice(0, 19).replace('T', ' ')
+    const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
     var idFrom = await AccHistory.getNewId(from, date);
     var idTo = await AccHistory.getNewId(to, date);
 
