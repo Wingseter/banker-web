@@ -187,9 +187,8 @@ router.post('/:id/use', needAuth, catchErrors(async (req, res, next) => {
 
     const dest = card.account;
     const date = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    
     var id = await AccHistory.getNewId(dest, date);
-    id = id.id || 0;
-
     const left = await Account.getMoneyById(card.account);
     var history = {
         account: dest,
