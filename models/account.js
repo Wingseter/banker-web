@@ -108,7 +108,7 @@ function sendMoney(from, to, money){
 
 
 function possibleCheckCard(cardId, money){
-    var sql = 'SELECT accounts.money - ? > 0 AS available FROM accounts, cards WHERE cards.account = accounts.id AND cards.id = ?';
+    var sql = 'SELECT accounts.money - ? >= 0 AS available FROM accounts, cards WHERE cards.account = accounts.id AND cards.id = ?';
     var promise = new Promise((resolve,reject) => {
         DB('GET', sql, [money, cardId]).then(function (res) {
             resolve(res.row[0]);
@@ -118,7 +118,7 @@ function possibleCheckCard(cardId, money){
 }
 
 function possibleCheck(id, money){
-    var sql = 'SELECT accounts.money - ? > 0 AS available FROM accounts WHERE accounts.id = ?';
+    var sql = 'SELECT accounts.money - ? >= 0 AS available FROM accounts WHERE accounts.id = ?';
     var promise = new Promise((resolve,reject) => {
         DB('GET', sql, [money, id]).then(function (res) {
             resolve(res.row[0]);
