@@ -1,5 +1,5 @@
 .header.clearfix
-  nav.navbar.navbar-expand-md.navbar-light.bg-white.fixed-top.shadow-sm
+  nav.navbar.navbar-expand-md.navbar-light.fixed-top
     .container
       a.navbar-brand(href='/')
         img(src='/images/logoBlack.png', alt='명지은행')
@@ -8,21 +8,21 @@
 
       #mainNav.collapse.navbar-collapse
         ul.navbar-nav.ms-auto
-          li.nav-item
-            a.nav-link(href='/cards') Card
-          li.nav-item
-            a.nav-link(href='/accounts') Account
-          li.nav-item
-            a.nav-link(href='/users') Users
-          if !currentUser
+          if currentUser
             li.nav-item
-              a.nav-link(href='/signin') Signin
+              a.nav-link(href='/accounts') 계좌
             li.nav-item
-              a.nav-link(href='/users/new') Signup
-          else
+              a.nav-link(href='/cards') 카드
             li.nav-item
-              a.nav-link(href=`/users/${currentUser.id}`) My Profile
+              a.nav-link(href='/users') 사용자
+            li.nav-item
+              a.nav-link(href=`/users/${currentUser.id}`) 내 정보
             li.nav-item
               form.d-inline(action='/signout', method='POST')
                 +csrf
-                button.signout.nav-link.btn.btn-link(type='submit') Signout
+                button.signout.nav-link.btn.btn-link(type='submit') 로그아웃
+          else
+            li.nav-item
+              a.nav-link(href='/signin') 로그인
+            li.nav-item
+              a.nav-link(href='/users/new') 회원가입

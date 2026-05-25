@@ -1,19 +1,20 @@
-.form-group
-  label(for="name") Card Name (empty to use default Name)
-  input.form-control(type="text", name="name", placeholder="CardName", value=cards.cardname)
-.form-group
-  label(for="max") Card limit amount
-  input.form-control(type="text", name="max", placeholder="Card limit amount", value=cards.max)
-.form-group
-  label(for="type") Card type
-  select.form-control(type="text", name="type", placeholder="account type", value=cards.type)
-    option(value="명지 사랑 카드")  명지 사랑 카드
-    option(value="명지 브론즈 카드")  명지 브론즈 카드
-    option(value="명지 골드 카드")  명지 골드 카드
-    option(value="명지 블랙 카드")  명지 블랙 카드
-    option(value="프리미엄 cs 카드")  프리미엄 cs 카드
-.form-group
-  label(for="account") Connect Account
-  select.form-control(type="text", name="account", placeholder="Connect Account", value=cards.account)
+- var c = (typeof cards !== 'undefined' && cards) ? cards : {};
+.app-field
+  label.app-label(for='name') 카드 이름
+  input.app-input#name(type='text', name='name', placeholder='비워두면 기본 이름 사용', value=c.cardname)
+  .app-help 카드에 표시될 이름입니다.
+.app-form-row
+  .app-field
+    label.app-label(for='max') 한도 금액
+    input.app-input.app-input--money#max(type='text', name='max', placeholder='1000000', inputmode='numeric', value=c.max)
+    .app-help 단위: 원
+  .app-field
+    label.app-label(for='type') 카드 종류
+    select.app-select#type(name='type')
+      each opt in ['명지 사랑 카드', '명지 브론즈 카드', '명지 골드 카드', '명지 블랙 카드', '프리미엄 cs 카드']
+        option(value=opt, selected=(c.type === opt))= opt
+.app-field
+  label.app-label(for='account') 연결 계좌
+  select.app-select#account(name='account')
     each account in accounts
-      option(value=account.id) #{account.id}
+      option(value=account.id, selected=(String(c.account) === String(account.id)))= `계좌 #${account.id}`

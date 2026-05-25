@@ -3,22 +3,30 @@ extends ../layout
 include ../includes/_paginate
 
 block content
-  .container
-    
-    h1.main-title 
-      | Bank Account
+  section.app-page
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow Accounts
+          h1.app-page-title 내 계좌
+          if total > 0
+            p.app-page-subtitle 보유 계좌 #{total}개
+        .app-page-meta
+          a.app-btn.app-btn-primary(href='/accounts/new') + 새 계좌 개설
+
       if total > 0
-        .small Total #{total} account(s)
-    
-    h1.font-weight-light.align-middle  총액: #{moneyTotal}
-    if total <= 0 
-      .alert.alert-info No accounts available yet
-    else
-      .lists
-        each account in accounts
-          .list.card.mb-3
+        .app-account-total
+          span.app-account-total-label 총 자산
+          span.app-money.app-money--xl
+            span.app-money-sym ₩
+            | #{Number(moneyTotal).toLocaleString('ko-KR')}
+
+      if total <= 0
+        .app-empty
+          h3.app-empty-title 아직 계좌가 없습니다
+          p.app-empty-text 계좌를 만들고 첫 송금을 시작해보세요.
+          a.app-btn.app-btn-primary(href='/accounts/new') 새 계좌 개설
+      else
+        .app-list
+          each account in accounts
             include _account
-
-
-    hr
-    a.btn.btn-primary(href='/accounts/new') Make Bank Account

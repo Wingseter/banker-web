@@ -1,62 +1,72 @@
 extends ../layout
 
 block content
+  section.app-page.app-page--narrow
     .container
-        h1.main-title 계좌번호: #{account.id}
-        dl.row
-            dt.col-sm-3 예금 계좌 종류
-            dd.col-sm-9 #{account.type}
+      .app-page-head
+        div
+          .app-page-eyebrow 계좌 ##{account.id}
+          h1.app-page-title= account.type || '일반 통장'
+        .app-page-meta
+          a.app-btn.app-btn-secondary.app-btn-sm(href='/accounts') 목록
 
-            dt.col-sm-3 예금잔고
-            dd.col-sm-9 #{account.money}
+      .app-card
+        .app-account-bal(style='margin-bottom:var(--sp-4)')
+          span.app-money.app-money--xl
+            span.app-money-sym ₩
+            | #{Number(account.money).toLocaleString('ko-KR')}
+        .app-actions
+          a.app-btn.app-btn-primary(href=`/accounts/${account.id}/input`) 입금
+          a.app-btn.app-btn-secondary(href=`/accounts/${account.id}/output`) 출금
+          a.app-btn.app-btn-secondary(href=`/accounts/${account.id}/sendmoney`) 이체
+          a.app-btn.app-btn-ghost.app-btn-sm(href=`/accounts/${account.id}/edit`, style='margin-left:auto') 설정
+          +deleteForm(`/accounts/${account.id}`, '삭제').app-btn.app-btn-danger.app-btn-sm
 
-            dt.col-sm-3 카드 신청 여부
-            dd.col-sm-9 #{account.card}
+      .app-card
+        .app-card-head
+          h2.app-card-title 계좌 정보
+        dl.app-stat-list
+          .app-stat-row
+            dt.app-stat-label 통장 종류
+            dd.app-stat-value
+              span.app-pill= account.type
+          .app-stat-row
+            dt.app-stat-label 계좌번호
+            dd.app-stat-value.app-stat-value--mono= account.id
+          .app-stat-row
+            dt.app-stat-label 카드 연결
+            dd.app-stat-value= account.card || '카드 신청 안함'
+          .app-stat-row
+            dt.app-stat-label 개설일
+            dd.app-stat-value.app-stat-value--mono= moment(account.date).format('YYYY-MM-DD')
 
-            dt.col-sm-3 예금 개설 일자
-            dd.col-sm-9 #{moment(account.date).format('YYYY-MM-DD')}
+      .app-card
+        .app-card-head
+          h2.app-card-title 계좌 사용자
+        dl.app-stat-list
+          .app-stat-row
+            dt.app-stat-label 이름
+            dd.app-stat-value= account.name
+          .app-stat-row
+            dt.app-stat-label 전화
+            dd.app-stat-value.app-stat-value--mono= account.phone
+          .app-stat-row
+            dt.app-stat-label 이메일
+            dd.app-stat-value= account.email
 
-
-        .list.show
-            .buttons
-                p
-                a.btn.btn-primary(href=`/accounts/${account.id}/input`) 입금
-                | 
-                a.btn.btn-outline-secondary(href=`/accounts/${account.id}/output`) 출금
-                | 
-                a.btn.btn-outline-danger.need-confirm-btn(href=`/accounts/${account.id}/sendmoney`) 계좌이체
-        .list.show
-            .buttons
-                p
-                a.btn.btn-outline-primary(href=`/accounts/${account.id}/edit`) Edit
-                |
-                +deleteForm(`/accounts/${account.id}`, 'Delete')
-
-        h1.main-title 계좌 사용자 정보
-        dl.row
-            dt.col-sm-3 사용자 이름
-            dd.col-sm-9 #{account.name}
-
-            dt.col-sm-3 고객 주민번호
-            dd.col-sm-9 #{account.userid}
-
-            dt.col-sm-3 고객 전화번호
-            dd.col-sm-9 #{account.phone}
-
-            dt.col-sm-3 고객 이메일
-            dd.col-sm-9 #{account.email}  
-        if histCount > 0
-            h3 #{histCount} history(s)
-            table.table.table-hover
-                thead
-                    tr
-                    th 입출금날짜
-                    th 거래번호
-                    th 예금구분
-                    th 예금내용
-                    th 거래금액
-                    th 예금잔고
-                tbody
-                    each history in historys
-                        include _history
-
+      if histCount > 0
+        .app-card
+          .app-card-head
+            h2.app-card-title 거래 내역
+            span.app-card-subtitle #{histCount}건
+          table.app-table
+            thead
+              tr
+                th 일자
+                th 구분
+                th 내용
+                th(style='text-align:right') 금액
+                th(style='text-align:right') 잔액
+            tbody
+              each history in historys
+                include _history

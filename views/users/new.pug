@@ -1,34 +1,46 @@
 extends ../layout
 
 block content
-  .container
-    h1.main-title Register
-    form(action='/users', method='POST')
-      +csrf
-      .form-group
-        label(for='email') Email Address
-        input.form-control(type='email', id='email', name='email', placeholder='Email')
-      .form-group
-        label(for='name') Name
-        input.form-control(type='text', id='name', name='name', placeholder='Your name')
-      .form-group
-        label(for='address') Address
-        input.form-control(type='text', id='address', name='address', placeholder='Address')
-      .form-group
-        label(for='birth') Date of birth
-        input.form-control(type='text', id='birth', name='birth', placeholder='Date of birth')
-      .form-group
-        label(for='phone') Phone Number (ex: 010-1234-5678)
-        input.form-control(type='text', id='phone', name='phone', placeholder='Phone Number')  
-      .form-group
-        label(for='job') Job 
-        input.form-control(type='text', id='job', name='job', placeholder='Job')          
-      .form-group
-        label(for='password') Password
-        input.form-control(type='password', id='password', name='password', placeholder='Password')
-      .form-group
-        label(for='password_confirmation') Password Confirmation
-        input.form-control(type='password', id='password_confirmation', name='password_confirmation', placeholder='Password')
-      a.btn.btn-outline-secondary(href='/users') List
-      | 
-      button.btn.btn-primary(type='submit') Register 
+  section.app-page.app-page--narrow
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow 회원가입
+          h1.app-page-title 명지은행과 함께
+          p.app-page-subtitle 30초면 첫 송금까지 끝납니다.
+        .app-page-meta
+          a.app-btn.app-btn-ghost.app-btn-sm(href='/signin') 이미 계정이 있으신가요?
+
+      .app-card
+        form.app-form(action='/users', method='POST')
+          +csrf
+          .app-field
+            label.app-label(for='email') 이메일
+            input.app-input#email(type='email', name='email', placeholder='you@example.com', required, autocomplete='email')
+          .app-field
+            label.app-label(for='name') 이름
+            input.app-input#name(type='text', name='name', placeholder='홍길동', required, autocomplete='name')
+          .app-form-row
+            .app-field
+              label.app-label(for='birth') 생년월일
+              input.app-input#birth(type='date', name='birth', required, autocomplete='bday')
+            .app-field
+              label.app-label(for='phone') 휴대전화
+              input.app-input#phone(type='text', name='phone', placeholder='010-1234-5678', required, autocomplete='tel')
+          .app-field
+            label.app-label(for='address') 주소
+            input.app-input#address(type='text', name='address', placeholder='서울시 ...', required, autocomplete='street-address')
+          .app-field
+            label.app-label(for='job') 직업
+            input.app-input#job(type='text', name='job', placeholder='학생 / 직장인 / 기타', autocomplete='off')
+          .app-form-row
+            .app-field
+              label.app-label(for='password') 비밀번호
+              input.app-input#password(type='password', name='password', required, autocomplete='new-password')
+              .app-help 8자 이상 권장
+            .app-field
+              label.app-label(for='password_confirmation') 비밀번호 확인
+              input.app-input#password_confirmation(type='password', name='password_confirmation', required, autocomplete='new-password')
+          .app-actions.app-actions--end(style='margin-top:var(--sp-3)')
+            a.app-btn.app-btn-secondary(href='/users') 목록
+            button.app-btn.app-btn-primary(type='submit') 가입하기

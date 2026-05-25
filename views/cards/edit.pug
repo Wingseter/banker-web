@@ -1,10 +1,18 @@
 extends ../layout
 
 block content
-  .container
-    h1.main-title Edit Card Information
-    form(action=`/cards/${cards.id}`, method='POST')
-      input(type='hidden', name='_method', value='PUT')
-      +csrf
-      include _form
-      button.btn.btn-outline-primary(type="submit") Update information
+  section.app-page.app-page--tight
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow 카드 ##{cards.id} 설정
+          h1.app-page-title 카드 수정
+
+      .app-card
+        form.app-form(action=`/cards/${cards.id}`, method='POST')
+          input(type='hidden', name='_method', value='PUT')
+          +csrf
+          include _form
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href=`/cards/${cards.id}`) 취소
+            button.app-btn.app-btn-primary(type='submit') 저장

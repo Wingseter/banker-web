@@ -1,7 +1,11 @@
+- var typeStr = String(history.type || '').toLowerCase();
+- var isOut = /(출금|송금|이체|결제|use)/.test(typeStr) || /^-/.test(String(history.money));
+- var moneyClass = isOut ? 'app-history-money-out' : 'app-history-money-in';
+- var sign = isOut ? '−' : '+';
 tr
-    td #{moment(history.date).format('YYYY-MM-DD')}
-    td= history.id
-    td= history.type
-    td= history.content
-    td= history.money
-    td= history.left
+  td= moment(history.date).format('YYYY-MM-DD')
+  td
+    span.app-pill.app-pill--muted= history.type
+  td(style='color:var(--app-text-muted)')= history.content || '—'
+  td(class=moneyClass) #{sign} #{Number(history.money).toLocaleString('ko-KR')}
+  td.app-history-left #{Number(history.left).toLocaleString('ko-KR')}

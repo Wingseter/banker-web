@@ -1,14 +1,24 @@
 extends ../layout
 
 block content
+  section.app-page.app-page--tight
     .container
-        h1.main-title 카드 사용
-        form(action=`/cards/${card.id}/use`, method="POST")
-            +csrf
-            .form-group
-                label(for="content") 사용 내역을 입력하세요
-                input.form-control(type="text", name="content", placeholder="내용")
-            .form-group
-                label(for="money") 사용 금액을 입력하세요
-                input.form-control(type="text", name="money", placeholder="금액")
-            button.btn.btn-outline-primary(type="submit") 결제
+      .app-page-head
+        div
+          .app-page-eyebrow 카드 ##{card.id}
+          h1.app-page-title 카드 결제
+          p.app-page-subtitle 결제 내역과 금액을 입력하세요.
+
+      .app-card
+        form.app-form(action=`/cards/${card.id}/use`, method='POST')
+          +csrf
+          .app-field
+            label.app-label(for='content') 사용 내역
+            input.app-input#content(type='text', name='content', placeholder='예) 스타벅스')
+          .app-field
+            label.app-label(for='money') 사용 금액
+            input.app-input.app-input--money#money(type='text', name='money', placeholder='0', inputmode='numeric', required)
+            .app-help 단위: 원
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href=`/cards/${card.id}`) 취소
+            button.app-btn.app-btn-primary(type='submit') 결제하기

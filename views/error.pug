@@ -1,11 +1,17 @@
 extends layout
 
 block content
-  .container
-    h1.main-title= message
-    if error && error.status
-      p.lead Status: #{error.status}
-    if error && error.stack
-      pre.bg-light.p-3.small #{error.stack}
-    p
-      a.btn.btn-outline-secondary(href='/') Home
+  section.app-page.app-page--narrow
+    .container
+      .app-empty
+        if error && error.status
+          .app-page-eyebrow Status #{error.status}
+        h1.app-empty-title(style='font-size:24px;margin:0 0 6px')= message
+        p.app-empty-text 요청하신 화면을 찾을 수 없거나 처리 중 문제가 생겼습니다.
+        .app-actions(style='justify-content:center')
+          a.app-btn.app-btn-primary(href='/') 홈으로
+          a.app-btn.app-btn-secondary(href='javascript:window.history.back();') 이전 화면
+      if error && error.stack
+        details.app-card(style='margin-top:var(--sp-5)')
+          summary(style='cursor:pointer;color:var(--app-text-muted);font-size:13px') 스택 트레이스 보기 (개발 모드)
+          pre(style='font-family:var(--font-mono);font-size:12px;color:var(--app-text-muted);white-space:pre-wrap;margin:var(--sp-3) 0 0')= error.stack

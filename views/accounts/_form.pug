@@ -1,7 +1,6 @@
-.form-group
-  label(for="type") Account type
-  select.form-control(type="text", name="type", placeholder="account type", value=account.type)
-    option(value="청약 저축 통장")  청약 저축 통장
-    option(value="일반 통장")  일반 통장
-    option(value="적금 통장")  적금 통장
-    option(value="청년 미래 통장")  청년 미래 통장
+- var current = (typeof account !== 'undefined' && account && account.type) ? account.type : null;
+.app-field
+  label.app-label(for='type') 통장 종류
+  select.app-select#type(name='type')
+    each opt in ['청약 저축 통장', '일반 통장', '적금 통장', '청년 미래 통장']
+      option(value=opt, selected=(current === opt))= opt

@@ -1,11 +1,17 @@
 extends ../layout
 
 block content
-  .container
-    h1.main-title New Account
-    form(action="/accounts", method="POST")
-      +csrf
-      include _form
-      button.btn.btn-outline-primary(type="submit") Make new Bank Account
+  section.app-page.app-page--tight
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow 계좌 개설
+          h1.app-page-title 새 계좌
 
-    
+      .app-card
+        form.app-form(action='/accounts', method='POST')
+          +csrf
+          include _form
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href='/accounts') 취소
+            button.app-btn.app-btn-primary(type='submit') 개설하기

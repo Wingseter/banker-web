@@ -103,59 +103,78 @@ body {
 }
 
 /* ====================================================================
-   Legacy layout — preserved for non-landing pages (signin, accounts,
-   cards, users). The Phase-3 design pass replaces these page-by-page.
+   Global app layout — body, topnav, base typography.
+   Tokenized so light + dark mode share the same surfaces.
    ==================================================================== */
-body > .main-content {
-  min-height: 400px;
+body {
+  background-color: var(--app-bg);
+  color: var(--app-text);
+  margin-top: 100px;
 }
+body > .main-content { min-height: 400px; }
 
 a:hover { text-decoration: none; }
 
-.form-actions {
-  padding: 19px 20px 20px;
-  margin-top: 20px;
-  margin-bottom: 20px;
-  background-color: #fff;
-  border-top: 1px solid #fff;
+/* Topnav -------------------------------------------------------------- */
+nav.navbar {
+  background-color: var(--app-bg-elevated) !important;
+  border-bottom: 1px solid var(--app-border);
+  box-shadow: none;
+  height: 64px;
+  padding: 0;
+}
+nav.navbar .container {
+  max-width: 1080px;
+}
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  height: 64px;
+  padding: 0;
+}
+.navbar img {
+  width: 138px;
+  height: auto;
+}
+ul.navbar-nav { align-items: center; gap: 4px; }
+a.nav-link {
+  color: var(--app-text-muted) !important;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 12px !important;
+  border-radius: var(--radius-sm);
+  transition: color 120ms, background 120ms;
+}
+a.nav-link:hover {
+  color: var(--app-text) !important;
+  background: var(--app-bg-subtle);
+}
+li.nav-item { padding: 0; }
+button.signout.nav-link {
+  color: var(--app-text-muted) !important;
+  font-weight: 500;
+  text-decoration: none;
+}
+button.signout.nav-link:hover {
+  color: var(--app-danger) !important;
+  background: var(--app-danger-bg);
+}
+.navbar-toggler { border: 1px solid var(--app-border); }
+.navbar-toggler:focus { box-shadow: 0 0 0 3px var(--app-brand-ring); }
+
+/* Logo treatment: invert in dark mode so the black mark stays legible */
+@media (prefers-color-scheme: dark) {
+  .navbar img { filter: invert(1) brightness(1.1); }
 }
 
+/* Legacy .main-title kept for any unmigrated page; matches new tokens */
 .main-title {
   font-size: 2rem;
   margin: 1em 0 0.5em 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--app-border);
   font-weight: 600;
   letter-spacing: -0.02em;
-}
-
-.form-signin {
-  margin: 0 auto;
-  padding: 1em;
-}
-
-body {
-  background-color: #f5f4f4;
-  margin-top: 100px;
-}
-nav {
-  background-color: #ffffff;
-  box-shadow: 0 2px 2px -2px rgba(0,0,0,.4);
-  height: 65px;
-}
-.navbar img {
-  width: 150px;
-}
-a.nav-link {
-  color: #393e46 !important;
-}
-li.nav-item:hover {
-  color: rgba(0, 0, 0,1) !important;
-}
-li.nav-item {
-  padding: 0px 8px;
-}
-a.signout {
-  color: #ff4b5c !important;
+  color: var(--app-text);
 }
 
 /* ====================================================================
@@ -214,6 +233,638 @@ a.signout {
   font-size: 12px;
   color: var(--app-text-faint);
 }
+
+/* ====================================================================
+   Inner app pages — design system.
+   `.app-*` namespace mirrors `.lp-*` quality for signin, users,
+   accounts, cards, and supporting pages. Uses the same brand tokens.
+   ==================================================================== */
+
+/* Page chrome ---------------------------------------------------------- */
+.app-page {
+  padding: var(--sp-7) 0 var(--sp-8);
+  min-height: calc(100vh - 200px);
+}
+.app-page .container {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 var(--sp-5);
+}
+.app-page--narrow .container { max-width: 720px; }
+.app-page--tight .container { max-width: 440px; }
+
+.app-page-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  padding-bottom: var(--sp-5);
+  margin-bottom: var(--sp-6);
+  border-bottom: 1px solid var(--app-border);
+  flex-wrap: wrap;
+}
+.app-page-eyebrow {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: var(--sp-2);
+}
+.app-page-title {
+  font-size: clamp(28px, 3.5vw, 40px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.1;
+  color: var(--app-text);
+  margin: 0;
+}
+.app-page-subtitle {
+  margin: var(--sp-2) 0 0;
+  color: var(--app-text-muted);
+  font-size: 15px;
+}
+.app-page-meta {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Card panel ---------------------------------------------------------- */
+.app-card {
+  background: var(--app-bg-elevated);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-lg);
+  padding: var(--sp-5) var(--sp-6);
+  box-shadow: var(--shadow-sm);
+}
+.app-card + .app-card { margin-top: var(--sp-4); }
+.app-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding-bottom: var(--sp-4);
+  margin-bottom: var(--sp-4);
+  border-bottom: 1px solid var(--app-border);
+}
+.app-card-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--app-text);
+  letter-spacing: -0.01em;
+}
+.app-card-subtitle {
+  font-size: 13px;
+  color: var(--app-text-muted);
+  margin: 4px 0 0;
+}
+
+/* Forms -------------------------------------------------------------- */
+.app-form { display: flex; flex-direction: column; gap: var(--sp-4); }
+.app-form-row {
+  display: grid;
+  gap: var(--sp-4);
+  grid-template-columns: 1fr 1fr;
+}
+@media (max-width: 560px) {
+  .app-form-row { grid-template-columns: 1fr; }
+}
+.app-field { display: flex; flex-direction: column; gap: 6px; }
+.app-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--app-text);
+}
+.app-help {
+  font-size: 12px;
+  color: var(--app-text-muted);
+}
+.app-input,
+.app-select,
+.app-textarea {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--app-text);
+  background: var(--app-bg-elevated);
+  border: 1px solid var(--app-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  transition: border-color 120ms, box-shadow 120ms, background 120ms;
+  font-variant-numeric: tabular-nums;
+}
+.app-input::placeholder,
+.app-textarea::placeholder {
+  color: var(--app-text-faint);
+}
+.app-input:focus,
+.app-select:focus,
+.app-textarea:focus {
+  outline: none;
+  border-color: var(--app-brand);
+  box-shadow: 0 0 0 4px var(--app-brand-ring);
+}
+.app-input[type="date"] { font-family: var(--font-mono); }
+.app-input--money {
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  padding: 14px 16px;
+}
+.app-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, var(--app-text-muted) 50%),
+                    linear-gradient(135deg, var(--app-text-muted) 50%, transparent 50%);
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: var(--sp-6);
+}
+.app-textarea { resize: vertical; min-height: 80px; }
+
+/* Buttons ------------------------------------------------------------ */
+.app-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 120ms, border-color 120ms, color 120ms, transform 60ms;
+}
+.app-btn:active { transform: translateY(1px); }
+.app-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 4px var(--app-brand-ring);
+}
+.app-btn-primary {
+  background: var(--app-brand);
+  color: var(--app-brand-text);
+}
+.app-btn-primary:hover { background: var(--app-brand-hover); color: var(--app-brand-text); }
+.app-btn-secondary {
+  background: var(--app-bg-elevated);
+  border-color: var(--app-border-strong);
+  color: var(--app-text);
+}
+.app-btn-secondary:hover {
+  background: var(--app-bg-subtle);
+  border-color: var(--app-text-muted);
+  color: var(--app-text);
+}
+.app-btn-ghost {
+  background: transparent;
+  color: var(--app-text-muted);
+}
+.app-btn-ghost:hover { background: var(--app-bg-subtle); color: var(--app-text); }
+.app-btn-danger {
+  background: transparent;
+  border-color: var(--app-danger);
+  color: var(--app-danger);
+}
+.app-btn-danger:hover { background: var(--app-danger-bg); }
+.app-btn-block { width: 100%; }
+.app-btn-lg { padding: 14px 22px; font-size: 15px; }
+.app-btn-sm { padding: 6px 12px; font-size: 12px; }
+
+.app-actions {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.app-actions--end { justify-content: flex-end; }
+.app-actions--between { justify-content: space-between; }
+
+/* Stat list (replaces dl.row) --------------------------------------- */
+.app-stat-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+}
+.app-stat-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 200px) 1fr;
+  gap: var(--sp-4);
+  padding: var(--sp-3) 0;
+  border-bottom: 1px solid var(--app-border);
+  align-items: baseline;
+}
+.app-stat-row:last-child { border-bottom: none; }
+.app-stat-label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--app-text-muted);
+}
+.app-stat-value {
+  font-size: 15px;
+  color: var(--app-text);
+  word-break: break-word;
+}
+.app-stat-value--mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .app-stat-row {
+    grid-template-columns: 1fr;
+    gap: 2px;
+    padding: var(--sp-3) 0;
+  }
+}
+
+/* Pills (account/card type tags) ------------------------------------- */
+.app-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--app-bg-subtle);
+  color: var(--app-text);
+  border: 1px solid var(--app-border);
+  white-space: nowrap;
+}
+.app-pill--brand {
+  background: var(--app-brand-soft);
+  color: var(--app-brand);
+  border-color: transparent;
+}
+.app-pill--muted {
+  background: transparent;
+  color: var(--app-text-muted);
+}
+
+/* Money display ------------------------------------------------------ */
+.app-money {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.app-money-sym { color: var(--app-text-muted); margin-right: 2px; font-weight: 500; }
+.app-money--lg { font-size: 28px; }
+.app-money--xl { font-size: 40px; letter-spacing: -0.025em; }
+.app-money-pos { color: var(--app-money-positive); }
+.app-money-neg { color: var(--app-money-negative); }
+
+/* Table -------------------------------------------------------------- */
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.app-table thead th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 12px;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--sp-3) var(--sp-3);
+  border-bottom: 1px solid var(--app-border);
+}
+.app-table tbody td {
+  padding: var(--sp-3) var(--sp-3);
+  border-bottom: 1px solid var(--app-border);
+  color: var(--app-text);
+  vertical-align: middle;
+}
+.app-table tbody tr:hover { background: var(--app-bg-subtle); }
+.app-table tbody tr:last-child td { border-bottom: none; }
+.app-table-money { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; }
+
+/* Empty state -------------------------------------------------------- */
+.app-empty {
+  text-align: center;
+  padding: var(--sp-8) var(--sp-5);
+  background: var(--app-bg-subtle);
+  border: 1px dashed var(--app-border-strong);
+  border-radius: var(--radius-lg);
+}
+.app-empty-icon { font-size: 32px; opacity: 0.5; margin-bottom: var(--sp-3); }
+.app-empty-title { font-size: 16px; font-weight: 600; color: var(--app-text); margin: 0 0 6px; }
+.app-empty-text { font-size: 14px; color: var(--app-text-muted); margin: 0 0 var(--sp-4); }
+
+/* Account card (used in /accounts list) ------------------------------ */
+.app-account {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--sp-5);
+  align-items: center;
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--app-bg-elevated);
+  border: 1px solid var(--app-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 120ms, transform 120ms, box-shadow 120ms;
+}
+.app-account:hover {
+  border-color: var(--app-brand);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+.app-account-head { display: flex; align-items: center; gap: var(--sp-3); margin-bottom: var(--sp-2); }
+.app-account-type { font-size: 13px; color: var(--app-text-muted); font-weight: 500; }
+.app-account-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--app-text-faint);
+  font-variant-numeric: tabular-nums;
+}
+.app-account-bal { display: flex; align-items: baseline; gap: 6px; }
+.app-account-bal-num {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--app-text);
+}
+.app-account-bal-currency {
+  font-size: 14px;
+  color: var(--app-text-muted);
+  font-weight: 500;
+}
+.app-account-meta {
+  display: flex;
+  gap: var(--sp-3);
+  align-items: center;
+  margin-top: var(--sp-2);
+  font-size: 12px;
+  color: var(--app-text-faint);
+}
+.app-account-link {
+  text-decoration: none;
+  color: inherit;
+  display: contents;
+}
+.app-account-arrow {
+  font-size: 24px;
+  color: var(--app-text-faint);
+  transition: color 120ms, transform 120ms;
+}
+.app-account:hover .app-account-arrow {
+  color: var(--app-brand);
+  transform: translateX(2px);
+}
+
+.app-account-total {
+  display: flex;
+  align-items: baseline;
+  gap: var(--sp-3);
+  padding: var(--sp-5) var(--sp-6);
+  background: var(--app-bg-subtle);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--sp-5);
+}
+.app-account-total-label {
+  font-size: 13px;
+  color: var(--app-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* List grid for accounts/cards --------------------------------------- */
+.app-list { display: grid; gap: var(--sp-3); }
+
+/* ====================================================================
+   Bank card visuals (`/cards`) — plastic card UI by type.
+   Use [data-card-type="gold|love|bronze|black|cs|default"] on the
+   `.bank-card` to pick the gradient. Markup is type-agnostic.
+   ==================================================================== */
+.bank-card {
+  position: relative;
+  aspect-ratio: 1.586 / 1;
+  border-radius: 16px;
+  padding: 20px 22px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: var(--font-sans);
+  overflow: hidden;
+  isolation: isolate;
+  box-shadow: 0 12px 28px -10px rgba(0, 0, 0, 0.35), 0 4px 8px -2px rgba(0, 0, 0, 0.18);
+  text-decoration: none;
+  transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 220ms;
+}
+.bank-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 22px 40px -14px rgba(0, 0, 0, 0.40), 0 8px 16px -4px rgba(0, 0, 0, 0.22);
+}
+.bank-card::after {
+  /* subtle radial sheen on top-right */
+  content: '';
+  position: absolute;
+  top: -40%;
+  right: -20%;
+  width: 80%;
+  height: 160%;
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.18), transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+.bank-card > * { position: relative; z-index: 1; }
+
+.bank-card-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.bank-card-brand-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.bank-card-brand-mark {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+  color: #fff;
+  text-align: center;
+  line-height: 22px;
+  font-size: 13px;
+}
+.bank-card-type-chip {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.bank-card-number {
+  font-family: var(--font-mono);
+  font-size: clamp(15px, 1.8vw, 19px);
+  letter-spacing: 0.14em;
+  font-weight: 500;
+  margin: 8px 0;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.22);
+}
+.bank-card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--sp-3);
+}
+.bank-card-meta-cell { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.bank-card-meta-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  opacity: 0.7;
+}
+.bank-card-meta-value {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 16ch;
+}
+.bank-card-meta-value--mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+/* Type variants — gradient backgrounds ------------------------------- */
+.bank-card[data-card-type="love"] {
+  background:
+    linear-gradient(135deg, #ff5c8a 0%, #ff85a1 50%, #d6447b 100%);
+}
+.bank-card[data-card-type="bronze"] {
+  background:
+    linear-gradient(135deg, #a87644 0%, #c4956d 50%, #7a4f24 100%);
+}
+.bank-card[data-card-type="gold"] {
+  background:
+    linear-gradient(135deg, #b48942 0%, #e0c187 45%, #8e6a2f 100%);
+}
+.bank-card[data-card-type="black"] {
+  background:
+    linear-gradient(135deg, #1d2230 0%, #2a3144 55%, #0d111a 100%);
+}
+.bank-card[data-card-type="cs"] {
+  background:
+    linear-gradient(135deg, #0064ff 0%, #4d8eff 50%, #001b54 100%);
+}
+.bank-card[data-card-type="default"] {
+  background:
+    linear-gradient(135deg, #4a4a4a 0%, #6a6a6a 50%, #2a2a2a 100%);
+}
+
+/* Sizes -------------------------------------------------------------- */
+.bank-card--lg {
+  max-width: 420px;
+  padding: 24px 26px;
+}
+.bank-card--lg .bank-card-number { font-size: 22px; }
+.bank-card--lg .bank-card-meta-value { font-size: 15px; }
+
+/* Card list grid ----------------------------------------------------- */
+.app-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--sp-4);
+}
+
+/* Page-level flash messages ----------------------------------------- */
+.app-flash {
+  margin: 0 auto var(--sp-4);
+  max-width: 1080px;
+  padding: 0 var(--sp-5);
+}
+.app-flash-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border-radius: var(--radius-md);
+  font-size: 14px;
+  border: 1px solid;
+  margin-bottom: var(--sp-2);
+}
+.app-flash-item--success { background: var(--app-success-bg); border-color: var(--app-success); color: var(--app-success); }
+.app-flash-item--info { background: var(--app-info-bg); border-color: var(--app-info); color: var(--app-info); }
+.app-flash-item--warning { background: var(--app-warning-bg); border-color: var(--app-warning); color: var(--app-warning); }
+.app-flash-item--error,
+.app-flash-item--danger { background: var(--app-danger-bg); border-color: var(--app-danger); color: var(--app-danger); }
+.app-flash-close {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 18px;
+  line-height: 1;
+  opacity: 0.6;
+}
+.app-flash-close:hover { opacity: 1; }
+
+/* Pagination -------------------------------------------------------- */
+.app-pagination {
+  display: flex;
+  gap: 4px;
+  list-style: none;
+  padding: 0;
+  margin: var(--sp-5) 0 0;
+  justify-content: center;
+}
+.app-pagination a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--app-border);
+  color: var(--app-text);
+  text-decoration: none;
+  font-size: 13px;
+  background: var(--app-bg-elevated);
+}
+.app-pagination .active a {
+  background: var(--app-brand);
+  color: var(--app-brand-text);
+  border-color: var(--app-brand);
+}
+.app-pagination .disabled a {
+  color: var(--app-text-faint);
+  pointer-events: none;
+  background: transparent;
+}
+
+/* History table money tone ------------------------------------------ */
+.app-table tbody td.app-history-money-in { color: var(--app-money-positive); font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; font-weight: 500; }
+.app-table tbody td.app-history-money-out { color: var(--app-money-negative); font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; font-weight: 500; }
+.app-table tbody td.app-history-left { font-family: var(--font-mono); font-variant-numeric: tabular-nums; text-align: right; color: var(--app-text-muted); }
 
 /* ====================================================================
    Landing page (`views/index.pug`) — design refresh.

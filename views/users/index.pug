@@ -1,27 +1,40 @@
 extends ../layout
 
 block content
-  .container
-    h1.main-title Users
-    
-    table.table.table-hover
-      thead
-        tr
-          th Name
-          th Email
-          th address
-          th 
-      tbody
-        each user in users
-          if(currentUser.id != user.id)
-            tr
-              td
-                a(href=`/users/${user.id}`)= user.name
-              td= user.email
-              td= user.address
-                td
-                  a.btn.btn-sm.btn-outline-secondary(href=`/users/${user.id}/edit`)
-                    | #[i.fa.fa-pencil] Edit
-                  |
-                  +deleteForm(`/users/${user.id}`, 'Delete').btn-sm
-    a.btn.btn-primary(href='/users/new') #[i.fa.fa-plus] Register a new user
+  section.app-page
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow Users
+          h1.app-page-title 사용자 목록
+          p.app-page-subtitle 본인은 목록에서 제외됩니다.
+        .app-page-meta
+          a.app-btn.app-btn-primary(href='/users/new') + 새 사용자
+
+      - var visible = (users || []).filter(u => !currentUser || u.id != currentUser.id);
+      if visible.length === 0
+        .app-empty
+          h3.app-empty-title 다른 사용자가 없습니다
+          p.app-empty-text 새 사용자를 가입시켜 보세요.
+          a.app-btn.app-btn-primary(href='/users/new') 사용자 추가
+      else
+        .app-card(style='padding:0')
+          table.app-table
+            thead
+              tr
+                th(style='padding-left:var(--sp-5)') 이름
+                th 이메일
+                th 주소
+                th(style='text-align:right;padding-right:var(--sp-5)') 동작
+            tbody
+              each user in users
+                if(!currentUser || currentUser.id != user.id)
+                  tr
+                    td(style='padding-left:var(--sp-5)')
+                      a(href=`/users/${user.id}`, style='color:var(--app-brand);text-decoration:none;font-weight:500')= user.name
+                    td= user.email
+                    td(style='color:var(--app-text-muted)')= user.address
+                    td(style='text-align:right;padding-right:var(--sp-5)')
+                      .app-actions(style='justify-content:flex-end')
+                        a.app-btn.app-btn-secondary.app-btn-sm(href=`/users/${user.id}/edit`) 수정
+                        +deleteForm(`/users/${user.id}`, '삭제').app-btn.app-btn-danger.app-btn-sm

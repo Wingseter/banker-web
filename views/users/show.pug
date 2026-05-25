@@ -1,33 +1,39 @@
 extends ../layout
 
 block content
+  section.app-page.app-page--narrow
     .container
-        h1.main-title "#{user.name}"님의 정보
-                    
-        dl.row
-            dt.col-sm-3 이름
-            dd.col-sm-9= user.name
+      .app-page-head
+        div
+          .app-page-eyebrow 사용자 정보
+          h1.app-page-title= `${user.name} 님`
+        .app-page-meta
+          a.app-btn.app-btn-secondary.app-btn-sm(href='/users') 목록
+          if currentUser && currentUser.id == user.id
+            a.app-btn.app-btn-primary.app-btn-sm(href=`/users/${user.id}/edit`) 수정
 
-            dt.col-sm-3 E-mail
-            dd.col-sm-9= user.email
+      .app-card
+        dl.app-stat-list
+          .app-stat-row
+            dt.app-stat-label 이름
+            dd.app-stat-value= user.name
+          .app-stat-row
+            dt.app-stat-label 이메일
+            dd.app-stat-value= user.email
+          .app-stat-row
+            dt.app-stat-label 사용자 ID
+            dd.app-stat-value.app-stat-value--mono= user.id
+          .app-stat-row
+            dt.app-stat-label 주소
+            dd.app-stat-value= user.address
+          .app-stat-row
+            dt.app-stat-label 전화번호
+            dd.app-stat-value.app-stat-value--mono= user.phone
+          .app-stat-row
+            dt.app-stat-label 직업
+            dd.app-stat-value= user.job || '—'
 
-            dt.col-sm-3 고객 주민번호
-            dd.col-sm-9= user.id
-
-            dt.col-sm-3 주소
-            dd.col-sm-9= user.address
-
-            dt.col-sm-3 전화번호
-            dd.col-sm-9= user.phone
-
-            dt.col-sm-3 직업
-            dd.col-sm-9= user.job
-        
-            hr
-            p
-                a.btn.btn-outline-secondary(href='/users/') List
-                | 
-                a.btn.btn-outline-primary(href=`/users/${user.id}/edit`) Edit
-                | 
-                if(currentUser.id != user.id)
-                    +deleteForm(`/users/${user.id}`, 'Delete')
+      if currentUser && currentUser.id != user.id
+        .app-card
+          .app-actions.app-actions--end
+            +deleteForm(`/users/${user.id}`, '계정 삭제').app-btn.app-btn-danger.app-btn-sm

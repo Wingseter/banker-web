@@ -1,14 +1,24 @@
 extends ../layout
 
 block content
+  section.app-page.app-page--tight
     .container
-        h1.main-title 입금
-        form(action=`/accounts/${account.id}/input`, method="POST")
-            +csrf
-            .form-group
-                label(for="money") 입금할 금액을 입력하세요
-                input.form-control(type="text", name="money", placeholder="금액")
-            .form-group
-                label(for="content") 입금 설명을 입력하세요
-                input.form-control(type="text", name="content", placeholder="내용")
-            button.btn.btn-outline-primary(type="submit") 입금
+      .app-page-head
+        div
+          .app-page-eyebrow 계좌 ##{account.id}
+          h1.app-page-title 입금
+          p.app-page-subtitle 입금 금액과 내역을 입력하세요.
+
+      .app-card
+        form.app-form(action=`/accounts/${account.id}/input`, method='POST')
+          +csrf
+          .app-field
+            label.app-label(for='money') 금액
+            input.app-input.app-input--money#money(type='text', name='money', placeholder='0', inputmode='numeric', required)
+            .app-help 단위: 원
+          .app-field
+            label.app-label(for='content') 내용
+            input.app-input#content(type='text', name='content', placeholder='예) 월급')
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href=`/accounts/${account.id}`) 취소
+            button.app-btn.app-btn-primary(type='submit') 입금하기

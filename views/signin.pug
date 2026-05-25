@@ -1,26 +1,27 @@
 extends layout
 
 block content
-  .container
-    .form-signin.mx-auto.mt-5(style='max-width:360px')
-      form(action='/signin', method='POST')
-        +csrf
-        h3.h4.mb-3.fw-normal Sign in
-        .form-floating.mb-2
-          input#email.form-control(
-            type='email', name='email', placeholder='you@example.com',
-            required, autofocus, autocomplete='username'
-          )
-          label(for='email') Email address
-        .form-floating.mb-3
-          input#password.form-control(
-            type='password', name='password', placeholder='password',
-            required, autocomplete='current-password'
-          )
-          label(for='password') Password
-        button.btn.btn-primary.w-100(type='submit') Sign in
-        .text-center.mt-3.small
-          a(href='/users/new') Sign up
-          |  ·
-          |
-          a(href='/reset-password') Reset password
+  section.app-page.app-page--tight
+    .container
+      .app-card
+        .app-page-eyebrow 명지은행 · Myongji Bank
+        h1.app-page-title(style='font-size:24px;margin-bottom:var(--sp-5)') 로그인
+        form.app-form(action='/signin', method='POST')
+          +csrf
+          .app-field
+            label.app-label(for='email') 이메일
+            input.app-input#email(
+              type='email', name='email', placeholder='you@example.com',
+              required, autofocus, autocomplete='username'
+            )
+          .app-field
+            label.app-label(for='password') 비밀번호
+            input.app-input#password(
+              type='password', name='password',
+              required, autocomplete='current-password'
+            )
+          button.app-btn.app-btn-primary.app-btn-block.app-btn-lg(type='submit') 로그인
+          .app-actions(style='justify-content:center;font-size:13px;color:var(--app-text-muted);margin-top:var(--sp-2)')
+            a(href='/users/new', style='color:var(--app-brand);text-decoration:none') 회원가입
+            span ·
+            a(href='/reset-password', style='color:var(--app-text-muted);text-decoration:none') 비밀번호 찾기

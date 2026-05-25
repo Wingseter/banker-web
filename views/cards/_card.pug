@@ -1,21 +1,30 @@
-.content= card.content
-
-.card.col-sm-6.shadow.p-3.mb-5.bg-white.rounded
-  .card-body
-    dl.row
-      dt.col-sm-6
-        a.title(href=`/cards/${card.id}`) #{card.cardname}
-      dd.col-sm-6  
-        hr
-      dt.col-sm-4
-        h5.card-title 카드 번호
-      dd.col-sm-8  
-        h5.card-title #{card.id}
-      dt.col-sm-4
-        h6.card-subtitle.md-2.text-muted 카드 종류
-      dd.col-sm-8  
-        h6.card-subtitle.md-2.text-muted #{card.type}
-
-      
-    .author
-          | 카드 생성일: #{moment(card.date).format('YYYY-MM-DD')}
+-
+  var typeSlugMap = {
+    '명지 사랑 카드': 'love',
+    '명지 브론즈 카드': 'bronze',
+    '명지 골드 카드': 'gold',
+    '명지 블랙 카드': 'black',
+    '프리미엄 cs 카드': 'cs'
+  };
+  var typeSlug = typeSlugMap[card.type] || 'default';
+  var typeShort = (card.type || '').replace(/^명지\s*/, '').replace(/\s*카드$/, '').toUpperCase();
+  var cardNum = String(card.id).padStart(4, '0');
+  var maskedNum = '•••• •••• •••• ' + cardNum;
+  var issued = card.date ? new Date(card.date) : new Date();
+  var expiry = new Date(issued.getFullYear() + 5, issued.getMonth(), 1);
+  var expiryStr = String(expiry.getMonth() + 1).padStart(2, '0') + '/' + String(expiry.getFullYear()).slice(-2);
+  var holder = (card.name || '').toUpperCase();
+a.bank-card(href=`/cards/${card.id}`, data-card-type=typeSlug)
+  .bank-card-brand
+    span.bank-card-brand-name
+      span.bank-card-brand-mark 🌳
+      | 명지은행
+    span.bank-card-type-chip= typeShort
+  .bank-card-number= maskedNum
+  .bank-card-meta
+    .bank-card-meta-cell
+      span.bank-card-meta-label HOLDER
+      span.bank-card-meta-value= card.cardname || holder || '—'
+    .bank-card-meta-cell(style='text-align:right')
+      span.bank-card-meta-label EXP
+      span.bank-card-meta-value.bank-card-meta-value--mono= expiryStr

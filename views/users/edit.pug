@@ -1,35 +1,52 @@
 extends ../layout
 
 block content
+  section.app-page.app-page--narrow
     .container
-        h1.main-title Profile Update
-        form(action=`/users/${user.id}`, method='POST')
-            input(type='hidden', name='_method', value='PUT')
-            +csrf
-            .form-group
-                label(for='name') Name
-                input.form-control(type='text', id='name', name='name', placeholder='Your name', value=user.name)
-            .form-group
-                label(for='address') Address
-                input.form-control(type='text', id='address', name='address', placeholder='Address', value=user.address)
-            .form-group
-                label(for='birth') Date of birth
-                input.form-control(type='date', id='birth', name='birth', placeholder='Date of birth', value=user.birth ? new Date(user.birth).toISOString().slice(0, 10) : '')
-            .form-group
-                label(for='phone') Phone Number (ex: 010-1234-5678)
-                input.form-control(type='text', id='phone', name='phone', placeholder='Phone Number', value=user.phone)  
-            .form-group
-                label(for='job') Job 
-                input.form-control(type='text', id='job', name='job', placeholder='Job', value=user.job)          
-            .form-group
-                label(for='current_password') Current Password
-                input.form-control(type='password', id='current_password', name='current_password', placeholder='Current Password')
-            .form-group
-                label(for='password') Password
-                input.form-control(type='password', id='password', name='password', placeholder='Password')
-            .form-group
-                label(for='password_confirmation') Password Confirmation
-                input.form-control(type='password', id='password_confirmation', name='password_confirmation', placeholder='Password Confirmation')
-            a.btn.btn-outline-secondary(href='javascript:window.history.back();') Back 
-            | 
-            button.btn.btn-primary(type='submit') Update
+      .app-page-head
+        div
+          .app-page-eyebrow 내 정보 수정
+          h1.app-page-title= user.name + ' 님'
+          p.app-page-subtitle 이메일은 변경할 수 없습니다.
+
+      .app-card
+        form.app-form(action=`/users/${user.id}`, method='POST')
+          input(type='hidden', name='_method', value='PUT')
+          +csrf
+          .app-field
+            label.app-label(for='name') 이름
+            input.app-input#name(type='text', name='name', value=user.name)
+          .app-form-row
+            .app-field
+              label.app-label(for='birth') 생년월일
+              input.app-input#birth(type='date', name='birth', value=user.birth ? new Date(user.birth).toISOString().slice(0, 10) : '')
+            .app-field
+              label.app-label(for='phone') 휴대전화
+              input.app-input#phone(type='text', name='phone', value=user.phone, placeholder='010-1234-5678')
+          .app-field
+            label.app-label(for='address') 주소
+            input.app-input#address(type='text', name='address', value=user.address)
+          .app-field
+            label.app-label(for='job') 직업
+            input.app-input#job(type='text', name='job', value=user.job)
+
+      .app-card
+        .app-card-head
+          h2.app-card-title 비밀번호 변경
+          .app-card-subtitle 변경하지 않으려면 비워두세요.
+        form.app-form(action=`/users/${user.id}`, method='POST')
+          input(type='hidden', name='_method', value='PUT')
+          +csrf
+          .app-field
+            label.app-label(for='current_password') 현재 비밀번호
+            input.app-input#current_password(type='password', name='current_password', autocomplete='current-password')
+          .app-form-row
+            .app-field
+              label.app-label(for='password') 새 비밀번호
+              input.app-input#password(type='password', name='password', autocomplete='new-password')
+            .app-field
+              label.app-label(for='password_confirmation') 새 비밀번호 확인
+              input.app-input#password_confirmation(type='password', name='password_confirmation', autocomplete='new-password')
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href='javascript:window.history.back();') 취소
+            button.app-btn.app-btn-primary(type='submit') 저장

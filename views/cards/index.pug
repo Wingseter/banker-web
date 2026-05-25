@@ -3,20 +3,23 @@ extends ../layout
 include ../includes/_paginate
 
 block content
-  .container
-    h1.main-title 
-      | Card List
-      if total > 0
-        .small Total #{total} card(s)
+  section.app-page
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow Cards
+          h1.app-page-title 내 카드
+          if total > 0
+            p.app-page-subtitle 보유 카드 #{total}장
+        .app-page-meta
+          a.app-btn.app-btn-primary(href='/cards/new') + 새 카드 신청
 
-    if total <= 0 
-      .alert.alert-info No card exist yet
-    else
-      .lists
-        each card in cards
-          .list
+      if total <= 0
+        .app-empty
+          h3.app-empty-title 아직 카드가 없습니다
+          p.app-empty-text 명지은행 카드를 신청하고 결제·할부 혜택을 받아보세요.
+          a.app-btn.app-btn-primary(href='/cards/new') 새 카드 신청
+      else
+        .app-card-grid
+          each card in cards
             include _card
-
-
-    hr
-    a.btn.btn-primary(href='/cards/new') #[i.fa.fa-plus] Make Card

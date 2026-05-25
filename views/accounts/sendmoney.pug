@@ -1,17 +1,27 @@
 extends ../layout
 
 block content
+  section.app-page.app-page--tight
     .container
-        h1.main-title 계좌 이체
-        form(action=`/accounts/${account.id}/sendmoney`, method="POST")
-            +csrf
-            .form-group
-                label(for="to") 보낼 계좌번호를 입력하세요
-                input.form-control(type="text", name="to", placeholder="계좌번호")
-            .form-group
-                label(for="money") 보낼 금액을 입력하세요
-                input.form-control(type="text", name="money", placeholder="금액")
-            .form-group
-                label(for="content") 설명을 입력하세요
-                input.form-control(type="text", name="content", placeholder="내용")
-            button.btn.btn-outline-primary(type="submit") 송금
+      .app-page-head
+        div
+          .app-page-eyebrow 계좌 ##{account.id}
+          h1.app-page-title 계좌 이체
+          p.app-page-subtitle 받는 계좌번호와 금액을 입력하세요.
+
+      .app-card
+        form.app-form(action=`/accounts/${account.id}/sendmoney`, method='POST')
+          +csrf
+          .app-field
+            label.app-label(for='to') 받는 계좌번호
+            input.app-input#to(type='text', name='to', placeholder='예) 123', inputmode='numeric', required)
+          .app-field
+            label.app-label(for='money') 금액
+            input.app-input.app-input--money#money(type='text', name='money', placeholder='0', inputmode='numeric', required)
+            .app-help 단위: 원
+          .app-field
+            label.app-label(for='content') 내용 (선택)
+            input.app-input#content(type='text', name='content', placeholder='예) 월세')
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href=`/accounts/${account.id}`) 취소
+            button.app-btn.app-btn-primary(type='submit') 송금하기

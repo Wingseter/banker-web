@@ -1,9 +1,16 @@
-//- Flash messages partial. Iterates res.locals.flashMessages and renders
-//- a dismissible Bootstrap alert per type.
+//- Flash messages partial. Renders dismissible tokenized alerts per type.
 if flashMessages
-  each texts, type in flashMessages
-    .container
-      .alert.alert-dismissible.fade.show(class=`alert-${type}`)
-        each msg in texts
-          | #{msg}
-        button.btn-close(type='button', data-bs-dismiss='alert', aria-label='Close')
+  - var typeMap = { success: 'success', danger: 'danger', error: 'danger', warning: 'warning', info: 'info' };
+  - var hasAny = Object.keys(flashMessages || {}).some(t => (flashMessages[t] || []).length);
+  if hasAny
+    .app-flash
+      each texts, type in flashMessages
+        if texts && texts.length
+          - var tone = typeMap[type] || 'info';
+          .app-flash-item(class=`app-flash-item--${tone}`)
+            span
+              each msg, i in texts
+                if i > 0
+                  | &nbsp;·&nbsp;
+                | #{msg}
+            button.app-flash-close(type='button', data-bs-dismiss='alert', aria-label='Close', onclick='this.parentElement.remove()') ×

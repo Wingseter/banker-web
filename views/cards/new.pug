@@ -1,11 +1,17 @@
 extends ../layout
 
 block content
-  .container
-    h1.main-title New Card
-    form(action="/cards", method="POST")
-      +csrf
-      include _form
-      button.btn.btn-outline-primary(type="submit") Make new Card
+  section.app-page.app-page--tight
+    .container
+      .app-page-head
+        div
+          .app-page-eyebrow 카드 신청
+          h1.app-page-title 새 카드
 
-    
+      .app-card
+        form.app-form(action='/cards', method='POST')
+          +csrf
+          include _form
+          .app-actions.app-actions--end
+            a.app-btn.app-btn-secondary(href='/cards') 취소
+            button.app-btn.app-btn-primary(type='submit') 신청하기

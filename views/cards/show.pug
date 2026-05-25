@@ -1,45 +1,87 @@
 extends ../layout
 
 block content
+  -
+    var typeSlugMap = {
+      '명지 사랑 카드': 'love',
+      '명지 브론즈 카드': 'bronze',
+      '명지 골드 카드': 'gold',
+      '명지 블랙 카드': 'black',
+      '프리미엄 cs 카드': 'cs'
+    };
+    var typeSlug = typeSlugMap[card.type] || 'default';
+    var typeShort = (card.type || '').replace(/^명지\s*/, '').replace(/\s*카드$/, '').toUpperCase();
+    var cardNum = String(card.id).padStart(4, '0');
+    var maskedNum = '•••• •••• •••• ' + cardNum;
+    var issued = card.date ? new Date(card.date) : new Date();
+    var expiry = new Date(issued.getFullYear() + 5, issued.getMonth(), 1);
+    var expiryStr = String(expiry.getMonth() + 1).padStart(2, '0') + '/' + String(expiry.getFullYear()).slice(-2);
+  section.app-page.app-page--narrow
     .container
-        h1.main-title "#{card.cardname} "카드 정보
-        dl.row
-            dt.col-sm-3 카드 종류
-            dd.col-sm-9 #{card.type}
+      .app-page-head
+        div
+          .app-page-eyebrow 카드 ##{card.id}
+          h1.app-page-title= card.cardname || card.type
+          p.app-page-subtitle= card.type
+        .app-page-meta
+          a.app-btn.app-btn-secondary.app-btn-sm(href='/cards') 목록
 
-            dt.col-sm-3 카드 한도 금액
-            dd.col-sm-9 #{card.max}
+      .app-card(style='display:flex;justify-content:center;background:transparent;border:none;box-shadow:none;padding:var(--sp-4) 0 var(--sp-5)')
+        .bank-card.bank-card--lg(data-card-type=typeSlug, style='cursor:default')
+          .bank-card-brand
+            span.bank-card-brand-name
+              span.bank-card-brand-mark 🌳
+              | 명지은행
+            span.bank-card-type-chip= typeShort
+          .bank-card-number= maskedNum
+          .bank-card-meta
+            .bank-card-meta-cell
+              span.bank-card-meta-label HOLDER
+              span.bank-card-meta-value= card.cardname || (card.name || '').toUpperCase()
+            .bank-card-meta-cell(style='text-align:right')
+              span.bank-card-meta-label EXP
+              span.bank-card-meta-value.bank-card-meta-value--mono= expiryStr
 
-            dt.col-sm-3 카드 결제 일자
-            dd.col-sm-9 #{moment(card.lastuse).format('YYYY-MM-DD')}
+      .app-card
+        .app-actions
+          a.app-btn.app-btn-primary(href=`/cards/${card.id}/use`) 카드 결제
+          a.app-btn.app-btn-ghost(href=`/cards/${card.id}/edit`, style='margin-left:auto') 설정
+          +deleteForm(`/cards/${card.id}`, '삭제').app-btn.app-btn-danger.app-btn-sm
 
-            dt.col-sm-3 카드 신청 일자
-            dd.col-sm-9 #{moment(card.date).format('YYYY-MM-DD')}
+      .app-card
+        .app-card-head
+          h2.app-card-title 카드 정보
+        dl.app-stat-list
+          .app-stat-row
+            dt.app-stat-label 종류
+            dd.app-stat-value
+              span.app-pill= card.type
+          .app-stat-row
+            dt.app-stat-label 한도
+            dd.app-stat-value.app-stat-value--mono
+              | ₩ #{Number(card.max).toLocaleString('ko-KR')}
+          .app-stat-row
+            dt.app-stat-label 최근 결제일
+            dd.app-stat-value.app-stat-value--mono= moment(card.lastuse).format('YYYY-MM-DD')
+          .app-stat-row
+            dt.app-stat-label 신청일
+            dd.app-stat-value.app-stat-value--mono= moment(card.date).format('YYYY-MM-DD')
+          .app-stat-row
+            dt.app-stat-label 연결 계좌
+            dd.app-stat-value
+              a(href=`/accounts/${card.account}`, style='color:var(--app-brand);text-decoration:none')
+                | 계좌 ##{card.account}
 
-            dt.col-sm-3 예금계좌ID
-            dd.col-sm-9 #{card.account}
-
-        .list.show
-            .buttons
-                p
-                a.btn.btn-primary(href=`/cards/${card.id}/use`) 카드 사용
-                | 
-                a.btn.btn-outline-primary(href=`/cards/${card.id}/edit`) Edit
-                |
-                +deleteForm(`/cards/${card.id}`, 'Delete')
-
-        h1.main-title 카드 사용자 정보
-        dl.row
-            dt.col-sm-3 사용자 이름
-            dd.col-sm-9 #{card.name}
-
-            dt.col-sm-3 고객 주민번호
-            dd.col-sm-9 #{card.user}
-
-            dt.col-sm-3 고객 주소
-            dd.col-sm-9 #{card.address}
-
-
-             
-      
-
+      .app-card
+        .app-card-head
+          h2.app-card-title 사용자
+        dl.app-stat-list
+          .app-stat-row
+            dt.app-stat-label 이름
+            dd.app-stat-value= card.name
+          .app-stat-row
+            dt.app-stat-label 사용자 ID
+            dd.app-stat-value.app-stat-value--mono= card.user
+          .app-stat-row
+            dt.app-stat-label 주소
+            dd.app-stat-value= card.address
