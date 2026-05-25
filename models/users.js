@@ -30,15 +30,6 @@ function findOne(email, done){
     return promise;     
 }
 
-function findLogin(email, password){
-    var sql = 'SELECT * FROM users WHERE email = ? AND password=?';
-    var promise = new Promise((resolve,reject) => {
-        DB('GET', sql, [email, password]).then(function (res) {
-            resolve(res.row[0]);
-        });
-    });
-    return promise;     
-}
 function findOneAndRemove(id, done){
     var sql = 'DELETE FROM users WHERE id = ?';
     var promise = new Promise((resolve,reject) => {
@@ -77,4 +68,3 @@ module.exports.saveUser = saveUser;
 module.exports.getAllUser = getAllUser;
 module.exports.findOneAndRemove = findOneAndRemove;
 module.exports.updateUser = updateUser;
-module.exports.findLogin = findLogin;

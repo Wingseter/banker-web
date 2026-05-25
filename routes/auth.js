@@ -1,17 +1,20 @@
 module.exports = (app, passport) => {
-  app.get('/signin', (req, res, next) => {
+  app.get('/signin', (req, res) => {
     res.render('signin');
   });
 
   app.post('/signin', passport.authenticate('local-signin', {
-    successRedirect : '/', // redirect to the secure profile section
-    failureRedirect : '/signin', // redirect back to the signup page if there is an error
-    failureFlash : true // allow flash messages
+    successRedirect: '/',
+    failureRedirect: '/signin',
+    failureFlash: true,
   }));
 
-  app.get('/signout', (req, res) => {
-    req.logout();
-    req.flash('success', 'Successfully signed out');
-    res.redirect('/');
+  // passport 0.7+ requires a callback for req.logout.
+  app.post('/signout', (req, res, next) => {
+    req.logout((err) => {
+      if (err) return next(err);
+      req.flash('success', 'Successfully signed out');
+      res.redirect('/');
+    });
   });
 };

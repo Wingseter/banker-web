@@ -5,6 +5,7 @@ block content
     h1.main-title
     .clearfix
       form.form-signin(action='/signin', method='POST')
+        +csrf
         h3.form-signin-heading Signin
         label.sr-only(for='email') Email address
         input(

@@ -4,6 +4,7 @@ block content
     .container
         h1.main-title 카드 사용
         form(action=`/cards/${card.id}/use`, method="POST")
+            +csrf
             .form-group
                 label(for="content") 사용 내역을 입력하세요
                 input.form-control(type="text", name="content", placeholder="내용")

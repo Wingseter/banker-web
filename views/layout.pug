@@ -10,6 +10,17 @@ html
     script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js')
     script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js')
     script(src='/javascripts/application.js')
+
+  //- Shared mixins available to every template that `extends layout`.
+  mixin csrf
+    input(type='hidden', name='_csrf', value=csrfToken)
+
+  mixin deleteForm(url, label)
+    form(action=url, method='POST', style='display:inline-block')
+      input(type='hidden', name='_method', value='DELETE')
+      +csrf
+      button.btn.btn-outline-danger.need-confirm-btn(type='submit')&attributes(attributes)= label || 'Delete'
+
   body
     block top-nav
       include ./includes/topnav
@@ -19,12 +30,10 @@ html
         .container
           .alert.alert-dismissible.fade.show(class=`alert-${type}`)
             each msg in texts
-              | #{msg} 
+              | #{msg}
             button.close(type='button', data-dismiss='alert', aria-label='close')
               span(aria-hidden='true') &times;
     block content
 
     block footer
       include ./includes/footer
-
-

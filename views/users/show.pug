@@ -30,4 +30,4 @@ block content
                 a.btn.btn-outline-primary(href=`/users/${user.id}/edit`) Edit
                 | 
                 if(currentUser.id != user.id)
-                    a.btn.btn-outline-danger.need-confirm-btn(href=`/users/${user.id}?_method=DELETE`) Delete
+                    +deleteForm(`/users/${user.id}`, 'Delete')

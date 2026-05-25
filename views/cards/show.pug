@@ -25,8 +25,8 @@ block content
                 a.btn.btn-primary(href=`/cards/${card.id}/use`) 카드 사용
                 | 
                 a.btn.btn-outline-primary(href=`/cards/${card.id}/edit`) Edit
-                | 
-                a.btn.btn-outline-danger.need-confirm-btn(href=`/cards/${card.id}?_method=DELETE`) Delete
+                |
+                +deleteForm(`/cards/${card.id}`, 'Delete')
 
         h1.main-title 카드 사용자 정보
         dl.row

@@ -1,7 +1,10 @@
 const express = require('express');
+const bcrypt = require('bcrypt');
 const router = express.Router();
 const User = require('../models/users')
 const catchErrors = require('../lib/async-error');
+
+const BCRYPT_ROUNDS = 12;
 
 function needAuth(req, res, next) {
   if (req.isAuthenticated()) {
@@ -140,14 +143,15 @@ router.post('/', catchErrors(async (req, res, next) => {
     req.flash('danger', 'user email already exists.');
     return res.redirect('back');
   }
-  user = {
+  const passwordHash = await bcrypt.hash(req.body.password, BCRYPT_ROUNDS);
+  const user = {
     email: req.body.email,
     name: req.body.name,
     address: req.body.address,
     birth: req.body.birth,
     phone: req.body.phone,
     job: req.body.job,
-    password: req.body.password,
+    password: passwordHash,
   };
   await User.saveUser(user);
   req.flash('success', 'Registered successfully. Please sign in.');
@@ -167,18 +171,19 @@ router.put('/:id', needAuth, catchErrors(async (req, res, next) => {
     return res.redirect('back');
   }
 
-  if (req.body.current_password != user.password) {
+  const currentOk = await bcrypt.compare(req.body.current_password || '', user.password);
+  if (!currentOk) {
     req.flash('danger', 'Current password invalid.');
     return res.redirect('back');
   }
-  
+
   user.name = req.body.name;
   user.address = req.body.address;
   user.birth = req.body.birth;
   user.job = req.body.job;
   user.phone = req.body.phone;
-  if(req.body.password){
-    user.password = req.body.password;
+  if (req.body.password) {
+    user.password = await bcrypt.hash(req.body.password, BCRYPT_ROUNDS);
   }
   await User.updateUser(user);
   req.flash('success', 'Updated successfully.');

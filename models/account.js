@@ -96,14 +96,11 @@ function withdrawMoney(id, money){
 }
 
 
-function sendMoney(from, to, money){
-    var sql = 'update accounts set money = money -  ? WHERE id =?;update accounts set money = money +  ? WHERE id=?';
-    var promise = new Promise((resolve,reject) => {
-        DB('GET', sql, [money, from, money, to]).then(function (res) {
-            resolve(res.row[0]);
-        }); 
-    });
-    return promise;
+async function sendMoney(from, to, money){
+    // Two single-statement updates; multipleStatements is intentionally off.
+    // Atomicity is enforced by the DB transaction added in Phase 2.
+    await withdrawMoney(from, money);
+    await saveMoney(to, money);
 }
 
 

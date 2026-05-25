@@ -23,6 +23,8 @@
                         li.nav-item
                             a.nav-link(href=`/users/${currentUser.id}`) My Profile
                         li.nav-item
-                            a.signout.nav-link(href='/signout') Signout
+                            form.form-inline(action='/signout', method='POST')
+                                +csrf
+                                button.signout.nav-link.btn.btn-link(type='submit') Signout
                 
                     
