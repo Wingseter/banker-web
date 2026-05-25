@@ -1,6 +1,11 @@
 extends layout
 
 block content
-  h1= message
-  h2= error.status
-  pre #{error.stack}
+  .container
+    h1.main-title= message
+    if error && error.status
+      p.lead Status: #{error.status}
+    if error && error.stack
+      pre.bg-light.p-3.small #{error.stack}
+    p
+      a.btn.btn-outline-secondary(href='/') Home

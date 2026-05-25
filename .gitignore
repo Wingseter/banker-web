@@ -7,6 +7,10 @@ web_modules/
 dist/
 coverage/
 
+# Playwright MCP scratch + ad-hoc screenshots
+.playwright-mcp/
+banker-*.png
+
 # IDEs and editors
 .idea/
 .project

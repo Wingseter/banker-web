@@ -2,32 +2,25 @@ extends layout
 
 block content
   .container
-    h1.main-title
-    .clearfix
-      form.form-signin(action='/signin', method='POST')
+    .form-signin.mx-auto.mt-5(style='max-width:360px')
+      form(action='/signin', method='POST')
         +csrf
-        h3.form-signin-heading Signin
-        label.sr-only(for='email') Email address
-        input(
-          type='email', id='email', name='email', class='form-control', 
-          placeholder='ID', required, autofocus
-        )
-        label.sr-only(for='password') Password
-        input(
-          type='password', id='password', name='password', class='form-control', 
-          placeholder='Password', required, autofocus
-        )
-        .checkbox
-        label 
-            input(type="checkbox", value="remember-me")
-            |
-            | Remember me
-        button.btn.btn-primary.btn-block(type='submit') Signin
-    
-        div.sub 
-        a(href='/users/new') Signup
-        | 
-        | /a
-        |
-        a(href='/reset-password') Reset Password
-      
+        h3.h4.mb-3.fw-normal Sign in
+        .form-floating.mb-2
+          input#email.form-control(
+            type='email', name='email', placeholder='you@example.com',
+            required, autofocus, autocomplete='username'
+          )
+          label(for='email') Email address
+        .form-floating.mb-3
+          input#password.form-control(
+            type='password', name='password', placeholder='password',
+            required, autocomplete='current-password'
+          )
+          label(for='password') Password
+        button.btn.btn-primary.w-100(type='submit') Sign in
+        .text-center.mt-3.small
+          a(href='/users/new') Sign up
+          |  ·
+          |
+          a(href='/reset-password') Reset password
