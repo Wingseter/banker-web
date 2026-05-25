@@ -1,0 +1,14 @@
+# Dev-only overrides — applied automatically by `docker compose up`
+# unless you pass -f docker-compose.yml only.
+services:
+  app:
+    build:
+      target: build
+    command: npx tsx watch src/bin/www.ts
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+      - ./views:/app/views
+      - ./public:/app/public
+      - ./tsconfig.json:/app/tsconfig.json:ro

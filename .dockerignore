@@ -1,0 +1,14 @@
+node_modules
+dist
+coverage
+.git
+.gitignore
+.env
+.env.local
+.vscode
+.idea
+.antigravitycli
+**/*.log
+Dockerfile
+docker-compose*.yml
+README.md

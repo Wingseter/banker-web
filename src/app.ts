@@ -17,6 +17,7 @@ import indexRouter from './routes/index';
 import usersRouter from './routes/users';
 import accountsRouter from './routes/accounts';
 import cardsRouter from './routes/cards';
+import healthRouter from './routes/health';
 import { registerAuthRoutes } from './routes/auth';
 import { configurePassport } from './lib/passport';
 
@@ -44,6 +45,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(projectRoot, 'public')));
+
+// /healthz must NOT be behind session/csrf — Docker healthcheck cannot
+// negotiate cookies. Mount before passport/csurf middleware so it's a
+// plain JSON probe.
+app.use('/', healthRouter);
 
 moment.tz.setDefault('Asia/Seoul');
 app.locals.moment = moment;
