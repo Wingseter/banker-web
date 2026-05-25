@@ -3,6 +3,24 @@ extends layout
 block content
   .landing
     //- ============================================================
+    //- JUMBOTRON — campus banner (legacy hero image, restored)
+    //- ============================================================
+    section.lp-jumbo(aria-label='명지은행 브랜드 이미지')
+      .container
+        .lp-jumbo-frame
+          img.lp-jumbo-img(
+            src='/images/bg.jpg',
+            alt='명지은행 · Myongji Bank — 학생 핀테크 데모',
+            loading='eager',
+            decoding='async'
+          )
+          .lp-jumbo-overlay(aria-hidden='true')
+          .lp-jumbo-meta
+            .lp-jumbo-badge
+              span.lp-jumbo-dot
+              | 학생 핀테크 데모 · Demo
+
+    //- ============================================================
     //- HERO
     //- ============================================================
     section.lp-hero
