@@ -8,6 +8,10 @@ CREATE DATABASE IF NOT EXISTS `bank`
 
 USE `bank`;
 
+-- docker-entrypoint loads this file with a default connection charset that
+-- can corrupt UTF-8 bytes in the seed strings; pin the session explicitly.
+SET NAMES utf8mb4;
+
 -- ---------------------------------------------------------------------------
 -- users
 -- ---------------------------------------------------------------------------
