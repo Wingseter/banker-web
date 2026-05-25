@@ -20,6 +20,7 @@ import cardsRouter from './routes/cards';
 import healthRouter from './routes/health';
 import { registerAuthRoutes } from './routes/auth';
 import { configurePassport } from './lib/passport';
+import { errorHandler } from './middlewares/error-handler';
 
 import './types/domain';
 
@@ -99,18 +100,6 @@ app.use((_req, _res, next) => {
   next(createError(404));
 });
 
-app.use((err: Error & { status?: number; code?: string }, req: Request, res: Response, _next: NextFunction) => {
-  if (err.code === 'EBADCSRFTOKEN') {
-    res.status(403);
-    res.locals.message = 'Invalid or missing CSRF token.';
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
-    res.render('error');
-    return;
-  }
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-  res.status(err.status ?? 500);
-  res.render('error');
-});
+app.use(errorHandler);
 
 export default app;

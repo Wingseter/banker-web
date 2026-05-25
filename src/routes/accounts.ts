@@ -1,32 +1,31 @@
 import { Router } from 'express';
+import { body } from 'express-validator';
+import { RowDataPacket } from 'mysql2';
+
 import * as Accounts from '../models/accounts';
 import * as History from '../models/history';
 import { catchErrors } from '../lib/async-error';
+import { withTransaction } from '../lib/db';
 import { needAuth } from '../middlewares/auth';
+import { validateForm } from '../middlewares/validate';
 
 const router = Router();
 
-interface AccountForm {
-  type?: string;
-}
+const moneyRule = body('money')
+  .exists({ checkFalsy: true }).withMessage('돈을 입력하세요.').bail()
+  .toFloat()
+  .isFloat({ gt: 0 }).withMessage('1원 이상 입력하세요.');
 
-function validateAccountForm(form: AccountForm): string | null {
-  const type = (form.type ?? '').trim();
-  if (!type) return 'Type is required.';
-  return null;
-}
+const typeRule = body('type')
+  .trim()
+  .notEmpty().withMessage('Type is required.');
 
-interface MoneyForm {
-  money?: string | number;
-  content?: string;
-}
-
-function validateMoney(form: MoneyForm): string | null {
-  const money = Number(form.money);
-  if (!form.money || Number.isNaN(money)) return '돈을 입력하세요.';
-  if (money <= 0) return '1원 이상 입력하세요.';
-  return null;
-}
+const transferRules = [
+  moneyRule,
+  body('to')
+    .exists({ checkFalsy: true }).withMessage('받는 계좌를 입력하세요.').bail()
+    .isInt({ min: 1 }).withMessage('계좌 ID가 올바르지 않습니다.'),
+];
 
 function nowDbTimestamp(): string {
   return new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -115,12 +114,8 @@ router.get(
 router.put(
   '/:id',
   needAuth,
+  validateForm([typeRule]),
   catchErrors(async (req, res) => {
-    const err = validateAccountForm(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
     const account = await Accounts.findById(req.params.id);
     if (!account) {
       req.flash('danger', 'Account does not exist.');
@@ -145,12 +140,8 @@ router.delete(
 router.post(
   '/',
   needAuth,
+  validateForm([typeRule]),
   catchErrors(async (req, res) => {
-    const err = validateAccountForm(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
     const user = req.user as { id: number };
     await Accounts.save({
       type: req.body.type,
@@ -164,34 +155,40 @@ router.post(
   }),
 );
 
+// ---------- money-moving endpoints ----------
+// All three wrap balance change + history insert in a single DB transaction
+// so a partial failure (DB error, application throw between the two writes)
+// rolls back the balance.
+
 router.post(
   '/:id/input',
   needAuth,
+  validateForm([moneyRule]),
   catchErrors(async (req, res) => {
-    const err = validateMoney(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
     const money = Number(req.body.money);
     const accountId = Number(req.params.id);
-
-    await Accounts.deposit(accountId, money);
-
+    const content = (req.body.content as string | undefined)?.trim() || '입금';
     const date = nowDbTimestamp();
-    const id = await History.getNextDailyId(accountId, date);
-    const left = (await Accounts.getMoneyById(accountId)) ?? '0';
-    const content = (req.body.content as string)?.trim() || '입금';
 
-    await History.save({
-      account: accountId,
-      date,
-      id,
-      type: '입금',
-      content,
-      money,
-      left,
+    await withTransaction(async (conn) => {
+      await conn.query('UPDATE accounts SET money = money + ? WHERE id = ?', [money, accountId]);
+      const [leftRows] = await conn.query<RowDataPacket[]>(
+        'SELECT money FROM accounts WHERE id = ?',
+        [accountId],
+      );
+      const left = leftRows[0]?.money ?? '0';
+      const [idRows] = await conn.query<RowDataPacket[]>(
+        'SELECT COALESCE(MAX(id), 0) AS id FROM history WHERE account = ? AND DATE(date) = DATE(?)',
+        [accountId, date],
+      );
+      const id = Number(idRows[0].id) + 1;
+      await conn.query(
+        `INSERT INTO history (account, date, id, type, content, money, \`left\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [accountId, date, id, '입금', content, money, left],
+      );
     });
+
     req.flash('success', 'Successfully saved money');
     res.redirect('/accounts');
   }),
@@ -200,36 +197,45 @@ router.post(
 router.post(
   '/:id/output',
   needAuth,
+  validateForm([moneyRule]),
   catchErrors(async (req, res) => {
-    const err = validateMoney(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
     const money = Number(req.body.money);
     const accountId = Number(req.params.id);
+    const content = (req.body.content as string | undefined)?.trim() || '출금';
+    const date = nowDbTimestamp();
 
-    if (!(await Accounts.hasEnoughFunds(accountId, money))) {
+    let insufficient = false;
+    await withTransaction(async (conn) => {
+      // Re-check balance inside the transaction so concurrent withdrawals can't
+      // double-spend. Using SELECT ... FOR UPDATE to lock the row.
+      const [balRows] = await conn.query<RowDataPacket[]>(
+        'SELECT money FROM accounts WHERE id = ? FOR UPDATE',
+        [accountId],
+      );
+      const balance = Number(balRows[0]?.money ?? 0);
+      if (balance < money) {
+        insufficient = true;
+        return;
+      }
+      await conn.query('UPDATE accounts SET money = money - ? WHERE id = ?', [money, accountId]);
+      const left = balance - money;
+      const [idRows] = await conn.query<RowDataPacket[]>(
+        'SELECT COALESCE(MAX(id), 0) AS id FROM history WHERE account = ? AND DATE(date) = DATE(?)',
+        [accountId, date],
+      );
+      const id = Number(idRows[0].id) + 1;
+      await conn.query(
+        `INSERT INTO history (account, date, id, type, content, money, \`left\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [accountId, date, id, '출금', content, -money, left],
+      );
+    });
+
+    if (insufficient) {
       req.flash('danger', '출금거부: 잔액이 부족합니다.');
       return res.redirect('back');
     }
 
-    await Accounts.withdraw(accountId, money);
-
-    const date = nowDbTimestamp();
-    const id = await History.getNextDailyId(accountId, date);
-    const left = (await Accounts.getMoneyById(accountId)) ?? '0';
-    const content = (req.body.content as string)?.trim() || '출금';
-
-    await History.save({
-      account: accountId,
-      date,
-      id,
-      type: '출금',
-      content,
-      money: -money,
-      left,
-    });
     req.flash('success', 'Successfully withdrew money');
     res.redirect('/accounts');
   }),
@@ -238,55 +244,89 @@ router.post(
 router.post(
   '/:id/sendmoney',
   needAuth,
+  validateForm(transferRules),
   catchErrors(async (req, res) => {
-    const err = validateMoney(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
-
     const money = Number(req.body.money);
     const from = Number(req.params.id);
     const to = Number(req.body.to);
+    const content = (req.body.content as string | undefined)?.trim() || '계좌이체';
+    const date = nowDbTimestamp();
+    // Optional sentinel for the rollback test: setting ?fail=1 throws after
+    // the withdraw row updates so we can prove the transaction unwinds.
+    // Strictly off in production to avoid an external DoS vector. Phase 5
+    // will replace this with proper jest mocks and drop the sentinel.
+    const forceFail =
+      req.query.fail === '1' && process.env.NODE_ENV !== 'production';
 
-    if (!(await Accounts.hasEnoughFunds(from, money))) {
-      req.flash('danger', '출금거부: 잔액이 부족합니다.');
-      return res.redirect('back');
-    }
+    let failure: 'insufficient' | 'no-recipient' | null = null;
+    await withTransaction(async (conn) => {
+      // Lock both rows in ascending id order to avoid deadlocks.
+      const [first, second] = [from, to].sort((a, b) => a - b);
+      const [rowsFirst] = await conn.query<RowDataPacket[]>(
+        'SELECT id, money FROM accounts WHERE id = ? FOR UPDATE',
+        [first],
+      );
+      const [rowsSecond] = await conn.query<RowDataPacket[]>(
+        'SELECT id, money FROM accounts WHERE id = ? FOR UPDATE',
+        [second],
+      );
 
-    const other = await Accounts.findById(to);
-    if (!other) {
+      const byId = new Map<number, { id: number; money: string }>();
+      for (const r of [...(rowsFirst as { id: number; money: string }[]), ...(rowsSecond as { id: number; money: string }[])]) {
+        byId.set(r.id, r);
+      }
+      const fromRow = byId.get(from);
+      const toRow = byId.get(to);
+      if (!toRow) {
+        failure = 'no-recipient';
+        return;
+      }
+      if (!fromRow || Number(fromRow.money) < money) {
+        failure = 'insufficient';
+        return;
+      }
+
+      await conn.query('UPDATE accounts SET money = money - ? WHERE id = ?', [money, from]);
+      if (forceFail) {
+        // Forced mid-transfer crash for the rollback test.
+        throw new Error('forced-failure-for-test');
+      }
+      await conn.query('UPDATE accounts SET money = money + ? WHERE id = ?', [money, to]);
+
+      const leftFrom = Number(fromRow.money) - money;
+      const leftTo = Number(toRow.money) + money;
+
+      const [idFromRows] = await conn.query<RowDataPacket[]>(
+        'SELECT COALESCE(MAX(id), 0) AS id FROM history WHERE account = ? AND DATE(date) = DATE(?)',
+        [from, date],
+      );
+      const idFrom = Number(idFromRows[0].id) + 1;
+      await conn.query(
+        `INSERT INTO history (account, date, id, type, content, money, \`left\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [from, date, idFrom, '계좌이체', content, -money, leftFrom],
+      );
+
+      const [idToRows] = await conn.query<RowDataPacket[]>(
+        'SELECT COALESCE(MAX(id), 0) AS id FROM history WHERE account = ? AND DATE(date) = DATE(?)',
+        [to, date],
+      );
+      const idTo = Number(idToRows[0].id) + 1;
+      await conn.query(
+        `INSERT INTO history (account, date, id, type, content, money, \`left\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [to, date, idTo, '계좌이체', content, money, leftTo],
+      );
+    });
+
+    if (failure === 'no-recipient') {
       req.flash('danger', '상대방이 존재하지 않습니다.');
       return res.redirect('back');
     }
-
-    await Accounts.transfer(from, to, money);
-
-    const date = nowDbTimestamp();
-    const idFrom = await History.getNextDailyId(from, date);
-    const idTo = await History.getNextDailyId(to, date);
-    const leftFrom = (await Accounts.getMoneyById(from)) ?? '0';
-    const leftTo = (await Accounts.getMoneyById(to)) ?? '0';
-    const content = (req.body.content as string)?.trim() || '계좌이체';
-
-    await History.save({
-      account: from,
-      date,
-      id: idFrom,
-      type: '계좌이체',
-      content,
-      money: -money,
-      left: leftFrom,
-    });
-    await History.save({
-      account: to,
-      date,
-      id: idTo,
-      type: '계좌이체',
-      content,
-      money,
-      left: leftTo,
-    });
+    if (failure === 'insufficient') {
+      req.flash('danger', '출금거부: 잔액이 부족합니다.');
+      return res.redirect('back');
+    }
 
     req.flash('success', 'Successfully sent money');
     res.redirect('/accounts');

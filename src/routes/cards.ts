@@ -1,39 +1,32 @@
 import { Router } from 'express';
+import { body } from 'express-validator';
+import { RowDataPacket } from 'mysql2';
+
 import * as Cards from '../models/cards';
 import * as Accounts from '../models/accounts';
-import * as History from '../models/history';
 import { catchErrors } from '../lib/async-error';
+import { withTransaction } from '../lib/db';
 import { needAuth } from '../middlewares/auth';
+import { validateForm } from '../middlewares/validate';
 
 const router = Router();
 
-interface CardForm {
-  max?: string | number;
-  type?: string;
-  account?: string | number;
-  name?: string;
-}
+const cardCreateRules = [
+  body('max')
+    .exists({ checkFalsy: true }).withMessage('Card limit is required.').bail()
+    .toFloat()
+    .isFloat({ gt: 0 }).withMessage('카드 한도는 1 이상이어야 합니다.'),
+  body('type').trim().notEmpty().withMessage('Type is required.'),
+  body('account').exists({ checkFalsy: true }).withMessage('Account is required.'),
+];
 
-function validateCardForm(form: CardForm): string | null {
-  const type = (form.type ?? '').trim();
-  if (!form.max) return 'Card limit is required.';
-  if (!type) return 'Type is required.';
-  if (Number(form.max) <= 0) return '카드 한도는 1 이상이어야 합니다.';
-  return null;
-}
-
-interface CardUseForm {
-  content?: string;
-  money?: string | number;
-}
-
-function validateCardUse(form: CardUseForm): string | null {
-  const content = (form.content ?? '').trim();
-  if (!content) return 'Content is required.';
-  if (!form.money) return 'Money is required.';
-  if (Number(form.money) <= 0) return '결제 거부: 1원 이상 써야합니다.';
-  return null;
-}
+const cardUseRules = [
+  body('content').trim().notEmpty().withMessage('Content is required.'),
+  body('money')
+    .exists({ checkFalsy: true }).withMessage('Money is required.').bail()
+    .toFloat()
+    .isFloat({ gt: 0 }).withMessage('결제 거부: 1원 이상 써야합니다.'),
+];
 
 function nowDbTimestamp(): string {
   return new Date().toISOString().slice(0, 19).replace('T', ' ');
@@ -131,12 +124,8 @@ router.delete(
 router.post(
   '/',
   needAuth,
+  validateForm(cardCreateRules),
   catchErrors(async (req, res) => {
-    const err = validateCardForm(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
     const name = req.body.name?.trim() || req.body.type;
     const accountId = Number(req.body.account);
     const count = await Cards.countByAccount(accountId);
@@ -161,38 +150,50 @@ router.post(
 router.post(
   '/:id/use',
   needAuth,
+  validateForm(cardUseRules),
   catchErrors(async (req, res) => {
-    const err = validateCardUse(req.body);
-    if (err) {
-      req.flash('danger', err);
-      return res.redirect('back');
-    }
     const money = Number(req.body.money);
-    if (!(await Accounts.hasEnoughFundsForCard(req.params.id, money))) {
-      req.flash('danger', '결제거부: 잔액이 부족합니다.');
-      return res.redirect('back');
-    }
-    const card = await Cards.findById(req.params.id);
+    const content = req.body.content as string;
+    const date = nowDbTimestamp();
+    const cardId = Number(req.params.id);
+
+    const card = await Cards.findById(cardId);
     if (!card) {
       req.flash('danger', 'Card does not exist.');
       return res.redirect('back');
     }
-    await Cards.useCard(card.id, money);
 
-    const date = nowDbTimestamp();
-    const id = await History.getNextDailyId(card.account, date);
-    const left = (await Accounts.getMoneyById(card.account)) ?? '0';
-
-    await Cards.saveDate(date, card.id);
-    await History.save({
-      account: card.account,
-      date,
-      id,
-      type: '카드사용',
-      content: req.body.content,
-      money: -money,
-      left,
+    let insufficient = false;
+    await withTransaction(async (conn) => {
+      // Lock the linked account row so we can charge it atomically.
+      const [balRows] = await conn.query<RowDataPacket[]>(
+        'SELECT money FROM accounts WHERE id = ? FOR UPDATE',
+        [card.account],
+      );
+      const balance = Number(balRows[0]?.money ?? 0);
+      if (balance < money) {
+        insufficient = true;
+        return;
+      }
+      await conn.query('UPDATE accounts SET money = money - ? WHERE id = ?', [money, card.account]);
+      const left = balance - money;
+      const [idRows] = await conn.query<RowDataPacket[]>(
+        'SELECT COALESCE(MAX(id), 0) AS id FROM history WHERE account = ? AND DATE(date) = DATE(?)',
+        [card.account, date],
+      );
+      const id = Number(idRows[0].id) + 1;
+      await conn.query(
+        `INSERT INTO history (account, date, id, type, content, money, \`left\`)
+         VALUES (?, ?, ?, ?, ?, ?, ?)`,
+        [card.account, date, id, '카드사용', content, -money, left],
+      );
+      await conn.query('UPDATE cards SET lastuse = ? WHERE id = ?', [date, cardId]);
     });
+
+    if (insufficient) {
+      req.flash('danger', '결제거부: 잔액이 부족합니다.');
+      return res.redirect('back');
+    }
 
     req.flash('success', '결제가 완료 되었습니다');
     res.redirect('/cards');
