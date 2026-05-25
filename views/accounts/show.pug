@@ -29,8 +29,8 @@ block content
             .buttons
                 p
                 a.btn.btn-outline-primary(href=`/accounts/${account.id}/edit`) Edit
-                | 
-                a.btn.btn-outline-danger.need-confirm-btn(href=`/accounts/${account.id}?_method=DELETE`) Delete
+                |
+                +deleteForm(`/accounts/${account.id}`, 'Delete')
 
         h1.main-title 계좌 사용자 정보
         dl.row

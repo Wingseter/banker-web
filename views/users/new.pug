@@ -4,6 +4,7 @@ block content
   .container
     h1.main-title Register
     form(action='/users', method='POST')
+      +csrf
       .form-group
         label(for='email') Email Address
         input.form-control(type='email', id='email', name='email', placeholder='Email')

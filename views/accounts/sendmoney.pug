@@ -4,6 +4,7 @@ block content
     .container
         h1.main-title 계좌 이체
         form(action=`/accounts/${account.id}/sendmoney`, method="POST")
+            +csrf
             .form-group
                 label(for="to") 보낼 계좌번호를 입력하세요
                 input.form-control(type="text", name="to", placeholder="계좌번호")

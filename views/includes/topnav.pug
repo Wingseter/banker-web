@@ -1,28 +1,28 @@
 .header.clearfix
-    nav.navbar.navbar-expand-md.navbar-dark.fixed-top
-        .container
-            a.navbar-brand(href="/")
-                img(src="/images/logoBlack.png")
-            button.navbar-toggler(type="button", data-toggle="collapse", data-target="#navbarsExampleDefault", aria-controls="navbarsExampleDefault", aria-expanded="false", aria-label="Toggle navigation")
-                span.navbar-toggler-icon
+  nav.navbar.navbar-expand-md.navbar-light.bg-white.fixed-top.shadow-sm
+    .container
+      a.navbar-brand(href='/')
+        img(src='/images/logoBlack.png', alt='명지은행')
+      button.navbar-toggler(type='button', data-bs-toggle='collapse', data-bs-target='#mainNav', aria-controls='mainNav', aria-expanded='false', aria-label='Toggle navigation')
+        span.navbar-toggler-icon
 
-            #navbarsExampleDefault.collapse.navbar-collapse
-                ul.navbar-nav.ml-auto
-                    li.nav-item
-                        a.nav-link(href="/cards") Card
-                    li.nav-item
-                        a.nav-link(href="/accounts") Account
-                    li.nav-item
-                        a.nav-link(href="/users") Users
-                    if (!currentUser) 
-                        li.nav-item
-                            a.nav-link(href='/signin') Signin
-                        li.nav-item
-                            a.nav-link(href='/users/new') Signup
-                    else
-                        li.nav-item
-                            a.nav-link(href=`/users/${currentUser.id}`) My Profile
-                        li.nav-item
-                            a.signout.nav-link(href='/signout') Signout
-                
-                    
+      #mainNav.collapse.navbar-collapse
+        ul.navbar-nav.ms-auto
+          li.nav-item
+            a.nav-link(href='/cards') Card
+          li.nav-item
+            a.nav-link(href='/accounts') Account
+          li.nav-item
+            a.nav-link(href='/users') Users
+          if !currentUser
+            li.nav-item
+              a.nav-link(href='/signin') Signin
+            li.nav-item
+              a.nav-link(href='/users/new') Signup
+          else
+            li.nav-item
+              a.nav-link(href=`/users/${currentUser.id}`) My Profile
+            li.nav-item
+              form.d-inline(action='/signout', method='POST')
+                +csrf
+                button.signout.nav-link.btn.btn-link(type='submit') Signout

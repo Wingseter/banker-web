@@ -20,9 +20,8 @@ block content
               td= user.email
               td= user.address
                 td
-                  a.btn.btn-sm.btn-outline-secondary(href=`/users/${user.id}/edit`) 
+                  a.btn.btn-sm.btn-outline-secondary(href=`/users/${user.id}/edit`)
                     | #[i.fa.fa-pencil] Edit
-                  | 
-                  a.btn.btn-sm.need-confirm-btn.btn-outline-danger(href=`/users/${user.id}?_method=DELETE`)
-                    | #[i.fa.fa-trash] Delete
+                  |
+                  +deleteForm(`/users/${user.id}`, 'Delete').btn-sm
     a.btn.btn-primary(href='/users/new') #[i.fa.fa-plus] Register a new user

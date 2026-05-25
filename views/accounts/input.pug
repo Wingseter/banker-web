@@ -4,6 +4,7 @@ block content
     .container
         h1.main-title 입금
         form(action=`/accounts/${account.id}/input`, method="POST")
+            +csrf
             .form-group
                 label(for="money") 입금할 금액을 입력하세요
                 input.form-control(type="text", name="money", placeholder="금액")

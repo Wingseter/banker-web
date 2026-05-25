@@ -4,6 +4,7 @@ block content
   .container
     h1.main-title New Account
     form(action="/accounts", method="POST")
+      +csrf
       include _form
       button.btn.btn-outline-primary(type="submit") Make new Bank Account
 

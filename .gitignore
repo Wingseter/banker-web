@@ -3,6 +3,14 @@ node_modules/
 jspm_packages/
 web_modules/
 
+# Build output
+dist/
+coverage/
+
+# Playwright MCP scratch + ad-hoc screenshots
+.playwright-mcp/
+banker-*.png
+
 # IDEs and editors
 .idea/
 .project

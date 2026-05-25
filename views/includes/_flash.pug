@@ -1,0 +1,9 @@
+//- Flash messages partial. Iterates res.locals.flashMessages and renders
+//- a dismissible Bootstrap alert per type.
+if flashMessages
+  each texts, type in flashMessages
+    .container
+      .alert.alert-dismissible.fade.show(class=`alert-${type}`)
+        each msg in texts
+          | #{msg}
+        button.btn-close(type='button', data-bs-dismiss='alert', aria-label='Close')
