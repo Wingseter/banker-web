@@ -1,5 +1,6 @@
 - var typeStr = String(history.type || '').toLowerCase();
-- var isOut = /(출금|송금|이체|결제|use)/.test(typeStr) || /^-/.test(String(history.money));
+- var amount = Number(history.money) || 0;
+- var isOut = amount < 0 || /(출금|송금|이체|결제|use)/.test(typeStr);
 - var moneyClass = isOut ? 'app-history-money-out' : 'app-history-money-in';
 - var sign = isOut ? '−' : '+';
 tr
@@ -7,5 +8,5 @@ tr
   td
     span.app-pill.app-pill--muted= history.type
   td(style='color:var(--app-text-muted)')= history.content || '—'
-  td(class=moneyClass) #{sign} #{Number(history.money).toLocaleString('ko-KR')}
+  td(class=moneyClass) #{sign} #{Math.abs(amount).toLocaleString('ko-KR')}
   td.app-history-left #{Number(history.left).toLocaleString('ko-KR')}
